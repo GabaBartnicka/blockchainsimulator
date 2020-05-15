@@ -9,5 +9,4 @@ public class BlockchainSimulatorApplication {
     public static void main(String[] args) {
         SpringApplication.run(BlockchainSimulatorApplication.class, args);
     }
-
 }
