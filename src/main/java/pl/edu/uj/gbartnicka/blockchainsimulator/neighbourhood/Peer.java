@@ -10,4 +10,9 @@ import lombok.NoArgsConstructor;
 public class Peer {
     private String name;
     private Integer port;
+
+    public Peer(Integer port) {
+        this.port = port;
+        this.name = "P" + port;
+    }
 }

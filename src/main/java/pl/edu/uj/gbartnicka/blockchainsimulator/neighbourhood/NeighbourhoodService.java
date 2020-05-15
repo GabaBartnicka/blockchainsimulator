@@ -11,10 +11,17 @@ import java.util.Set;
 @Slf4j
 public class NeighbourhoodService {
 
-    private Set<Peer> peers = new HashSet<>();
+    private final Set<Peer> peers = new HashSet<>();
 
     public void addPeer(Integer port) {
-        peers.add(new Peer("P" + port, port));
+        addPeer(new Peer(port));
+    }
+
+    public void addPeer(Peer peer) {
+        boolean add = peers.add(peer);
+        if (add) {
+            log.info("Added new peer {}", peer);
+        }
     }
 
     public Set<Peer> peers() {
@@ -28,5 +35,4 @@ public class NeighbourhoodService {
     public Optional<Peer> peer(String name) {
         return peers.stream().filter(p -> p.getName().equals(name)).findFirst();
     }
-
 }

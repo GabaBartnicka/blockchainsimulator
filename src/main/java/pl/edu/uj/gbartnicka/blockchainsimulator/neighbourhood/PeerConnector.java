@@ -18,6 +18,8 @@ public class PeerConnector {
 
     private Map<Peer, RSocketRequester> connections = new HashMap<>();
 
+    private final Peer myself;
+
     public void establishConnection(Peer peer) {
         log.info("Establishing connection to {}", peer);
         var conn = rsocketRequesterBuilder.connectTcp("localhost", peer.getPort()).block();
@@ -27,7 +29,7 @@ public class PeerConnector {
     public void ping(Peer peer) {
         log.info("Ping to {}", peer);
 
-        var data = new SimpleMessage("ping");
+        var data = new SimpleMessage("ping", myself);
         final RSocketRequester rSocketRequester = connections.get(peer);
         var response = rSocketRequester.route("request-response").data(data).retrieveMono(SimpleMessage.class).block();
 
@@ -36,7 +38,7 @@ public class PeerConnector {
 
     public void pingAll() {
         log.info("Sending one request. Waiting for one response...");
-        var data = new SimpleMessage("ping");
+        var data = new SimpleMessage("ping", myself);
         var responses = connections.values().stream().map(requestor ->
                 requestor.route("request-response").data(data).retrieveMono(SimpleMessage.class).block()
         ).peek(r -> log.info("Response: {}", r)).collect(Collectors.toList());
