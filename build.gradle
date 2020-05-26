@@ -28,12 +28,16 @@ dependencies {
 
     compile group: 'org.springframework.shell', name: 'spring-shell-starter', version: '2.0.1.RELEASE'
 
+    compile group: 'org.jetbrains', name: 'annotations', version: '19.0.0'
+    compile group: 'joda-time', name: 'joda-time', version: '2.10.6'
+
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
     testImplementation 'io.projectreactor:reactor-test'
+    testCompile group: 'org.assertj', name: 'assertj-core', version: '3.16.1'
 }
 
 test {

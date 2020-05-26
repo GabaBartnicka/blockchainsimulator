@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
+import pl.edu.uj.gbartnicka.blockchainsimulator.data.Block;
+import pl.edu.uj.gbartnicka.blockchainsimulator.data.Blockchain;
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.NeighbourhoodService;
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.Peer;
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.PeerConnector;
@@ -18,6 +20,7 @@ public class ShellController {
 
     private final NeighbourhoodService neighbourhoodService;
     private final PeerConnector peerConnector;
+    private final Blockchain blockchain;
 
     @ShellMethod("Test shell")
     public void greet(@ShellOption String text) {
@@ -43,5 +46,10 @@ public class ShellController {
             peerConnector.ping(found);
 
         }, () -> log.warn("Peer {} not found :-(", peer));
+    }
+
+    @ShellMethod("Mine")
+    public void mine(@ShellOption Integer index, @ShellOption String data) {
+        blockchain.addBlock(new Block(index, data));
     }
 }
