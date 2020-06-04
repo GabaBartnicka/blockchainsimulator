@@ -19,10 +19,6 @@ public class BlockchainSimulatorApplication {
     @Value("${spring.rsocket.server.port}")
     int port;
 
-    public static void main(String[] args) {
-        SpringApplication.run(BlockchainSimulatorApplication.class, args);
-    }
-
     @Bean
     Peer myself() {
         return new Peer(port);
@@ -31,6 +27,10 @@ public class BlockchainSimulatorApplication {
     @Bean
     Blockchain blockchain() {
         return new Blockchain();
+    }
+
+    public static void main(String[] args) {
+        SpringApplication.run(BlockchainSimulatorApplication.class, args);
     }
 
     @EventListener(ApplicationReadyEvent.class)

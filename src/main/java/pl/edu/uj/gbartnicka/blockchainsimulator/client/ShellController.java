@@ -41,11 +41,7 @@ public class ShellController {
     @ShellMethod("Ping")
     public void ping(@ShellOption String peer) {
         Optional<Peer> p = neighbourhoodService.peer(peer);
-        p.ifPresentOrElse(found -> {
-            peerConnector.establishConnection(found);
-            peerConnector.ping(found);
-
-        }, () -> log.warn("Peer {} not found :-(", peer));
+        p.ifPresentOrElse(peerConnector::ping, () -> log.warn("Peer {} not found :-(", peer));
     }
 
     @ShellMethod("Mine")
