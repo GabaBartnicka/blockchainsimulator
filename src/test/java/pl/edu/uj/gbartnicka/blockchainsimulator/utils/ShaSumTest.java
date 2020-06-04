@@ -3,8 +3,14 @@ package pl.edu.uj.gbartnicka.blockchainsimulator.utils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 
+import static org.assertj.core.api.Assertions.assertThat;
 
 class ShaSumTest {
 
@@ -17,5 +23,14 @@ class ShaSumTest {
         var actual = ShaSum.sha256(plain);
 
         assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    void name() throws IOException {
+        Path resourceDirectory = Paths.get("src", "resources");
+        String absolutePath = resourceDirectory.toFile().getAbsolutePath();
+
+        System.out.println(absolutePath);
+        Files.writeString(new File("/tmp/hello000.txt").toPath(), "asd", StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
     }
 }

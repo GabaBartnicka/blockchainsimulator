@@ -210,3 +210,5 @@ gradle-app.setting
 **/build/
 
 # End of https://www.gitignore.io/api/java,linux,macos,gradle,intellij
+
+src/main/resources/db/*_db.txt

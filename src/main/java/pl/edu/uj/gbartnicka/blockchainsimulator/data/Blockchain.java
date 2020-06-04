@@ -35,4 +35,8 @@ public class Blockchain {
     private Block getLastBlock() {
         return CollectionUtils.lastElement(chain);
     }
+
+    public void replaceChains(List<Block> chain) {
+        this.chain = chain;
+    }
 }
