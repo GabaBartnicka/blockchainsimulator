@@ -13,21 +13,25 @@ import java.util.List;
 public class Blockchain {
 
     private int difficulty;
+    private long mineRate = 3000L;
     private List<Block> chain = new ArrayList<>();
 
     public Blockchain() {
         this.difficulty = 6;
-        chain.add(new Block(0, "Block genesis"));
+        chain.add(new Block(0, "Block genesis", difficulty));
 
         log.info("Created blockchain with difficulty {}", difficulty);
     }
 
     public void addBlock(@NotNull Block newBlock) {
         var prev = getLastBlock();
-        log.info("Previous block {}", prev);
+        log.info("Previous block {}, start mining with difficulty {}", prev, difficulty);
 
         newBlock.setPrevHash(prev.getHash());
-        newBlock.mineBlock(difficulty);
+        newBlock.mineBlock(prev.getDifficulty());
+
+        difficulty = adjustDifficulty(prev.getTimestamp(), newBlock.getTimestamp());
+        log.info("New difficulty is {}", difficulty);
 
         chain.add(newBlock);
     }
@@ -51,5 +55,9 @@ public class Blockchain {
             chain.add(newBlock);
             log.info("block added");
         }
+    }
+
+    private Integer adjustDifficulty(long lastBlockTimestamp, long currentTime) {
+        return lastBlockTimestamp + mineRate > currentTime ? difficulty + 1 : difficulty - 1;
     }
 }
