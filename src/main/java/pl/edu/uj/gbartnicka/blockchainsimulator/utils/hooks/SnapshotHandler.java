@@ -28,8 +28,12 @@ public class SnapshotHandler {
         Gson gson = new Gson();
         var json = gson.toJson(blockchain);
 
-        Path filePath = Paths.get("src", "main", "resources", "db", filename);
+        Path filePathDirectory = Paths.get("src", "main", "resources", "db");
+        if (!filePathDirectory.toFile().exists()) {
+            filePathDirectory.toFile().mkdir();
+        }
 
+        Path filePath = Paths.get("src", "main", "resources", "db", filename);
         Try.of(() -> Files.writeString(filePath, json, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE))
                 .onFailure(e -> log.error("Cannot save into the file {} - {}", filePath, e.getMessage(), e))
                 .onSuccess(b -> log.info("Saved into the file {}", filePath));
@@ -41,7 +45,7 @@ public class SnapshotHandler {
 
         return Try.of(() -> Files.readString(filePath))
                 .onSuccess(b -> log.info("Loaded blockchain from {}", filePath))
-                .onFailure(e -> log.error("Cannot read file {}", filePath, e))
+                .onFailure(e -> log.error("Cannot read file {}", filePath))
                 .map(json -> Optional.of(new Gson().fromJson(json, Blockchain.class)))
                 .getOrElse(Optional.empty());
     }
