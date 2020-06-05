@@ -48,7 +48,7 @@ public class ShellController {
 
     @ShellMethod("mine new block")
     public void mine(@ShellOption Integer index, @ShellOption String data) {
-        blockchain.addBlock(new Block(index, data));
+        blockchainService.mine(new Block(index, data));
     }
 
     @ShellMethod("get all blockchain")
@@ -71,5 +71,11 @@ public class ShellController {
     public void snapshot() {
         saveBlockchainToFile.save();
         log.info("Done.");
+    }
+
+    @ShellMethod("synchronize blockchain")
+    public void sync(@ShellOption String peer) {
+        Optional<Peer> p = neighbourhoodService.peer(peer);
+        p.ifPresentOrElse(blockchainService::synchronizeWith, () -> log.warn("Peer {} not found :-(", peer));
     }
 }

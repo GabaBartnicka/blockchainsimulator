@@ -1,10 +1,12 @@
 package pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood;
 
+import com.google.gson.Gson;
 import io.vavr.control.Try;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.rsocket.RSocketRequester;
 import org.springframework.stereotype.Service;
+import pl.edu.uj.gbartnicka.blockchainsimulator.data.BlockchainEnvelope;
 import pl.edu.uj.gbartnicka.blockchainsimulator.data.SimpleMessage;
 import reactor.core.publisher.Mono;
 
@@ -44,5 +46,30 @@ public class PeerConnector {
             var response = rSocketRequester.route("request-response").data(data).retrieveMono(SimpleMessage.class).block();
             log.info("Response: {}", response);
         }).onFailure(e -> log.error("Cannot send ping to peer {} - {}", peer, e.getMessage()));
+    }
+
+    public BlockchainEnvelope askForBlockchain(Peer peer) {
+        var data = new SimpleMessage("ping", myself);
+        if (!connections.containsKey(peer)) {
+            log.warn("No connection to peer {}, trying to establish", peer);
+            establishConnection(peer);
+        }
+
+        return Try.of(() -> {
+            final RSocketRequester rSocketRequester = connections.get(peer).block();
+            var response = rSocketRequester.route("request-blockchain").data(data).retrieveMono(String.class).block();
+            log.info("Response: {}", response);
+            return new Gson().fromJson(response, BlockchainEnvelope.class);
+        }).onFailure(e -> log.error("Cannot send ping to peer {} - {}", peer, e.getMessage())).getOrNull();
+    }
+
+    public void newBlockMined(String block) {
+        connections.keySet().forEach(peer -> {
+                    final RSocketRequester rSocketRequester = connections.get(peer).block();
+                    var response = rSocketRequester.route("new-block").data(block).retrieveMono(String.class).block();
+                    log.debug("Response: {}", response);
+                }
+        );
+
     }
 }

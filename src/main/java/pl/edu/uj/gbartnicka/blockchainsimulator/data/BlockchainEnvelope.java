@@ -8,7 +8,9 @@ import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.Peer;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class BlockEnvelope {
-    private Block block;
+public class BlockchainEnvelope {
+
+    private Blockchain blockchain;
     private Peer sender;
+
 }

@@ -16,7 +16,7 @@ public class Blockchain {
     private List<Block> chain = new ArrayList<>();
 
     public Blockchain() {
-        this.difficulty = 2;
+        this.difficulty = 6;
         chain.add(new Block(0, "Block genesis"));
 
         log.info("Created blockchain with difficulty {}", difficulty);
@@ -32,11 +32,24 @@ public class Blockchain {
         chain.add(newBlock);
     }
 
-    private Block getLastBlock() {
+    public Block mine(@NotNull Block newBlock) {
+        addBlock(newBlock);
+        return getLastBlock();
+    }
+
+    public Block getLastBlock() {
         return CollectionUtils.lastElement(chain);
     }
 
     public void replaceChains(List<Block> chain) {
         this.chain = chain;
+    }
+
+    public void forceAddNewBlock(Block newBlock) {
+        final var prev = getLastBlock();
+        if (newBlock.getPrevHash().equals(prev.getHash())) {
+            chain.add(newBlock);
+            log.info("block added");
+        }
     }
 }
