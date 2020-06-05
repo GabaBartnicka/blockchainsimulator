@@ -39,7 +39,6 @@ public class Block {
         this.difficulty = difficulty;
     }
 
-
     @NotNull
     private String calculateHash() {
         String all = index + prevHash + timestamp + data + nonce + difficulty;
