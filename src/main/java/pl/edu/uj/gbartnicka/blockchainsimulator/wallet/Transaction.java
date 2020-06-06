@@ -20,13 +20,12 @@ import static pl.edu.uj.gbartnicka.blockchainsimulator.utils.ShaSum.sha256;
 @Slf4j
 @Data
 public class Transaction {
-    private UUID id;
+    private final UUID id;
     private Input input;
     private List<Output> outputs = new ArrayList<>();
 
     public Transaction(@NotNull Wallet senderWallet, @NotNull String recipientAddress, @NotNull BigDecimal amount) {
         id = UUID.randomUUID();
-
         log.info("Created transaction with id: {}", id.toString());
         if (senderWallet.getBalance().compareTo(amount) < 0) {
             log.error("Cannot create transaction");
@@ -62,7 +61,9 @@ public class Transaction {
     public void update(@NotNull Wallet senderWallet, @NotNull String recipientAddress, @NotNull BigDecimal amount) {
         var senderAddress = senderWallet.getPublicAddress();
         final var recipientOpt = findSenderRelatedOutput(senderAddress);
+        log.info("Updating transaction {} for sender {}", getId().toString(), senderWallet.getPublicAddress());
         if (recipientOpt.isEmpty()) {
+            log.warn("Cannot update transaction for sender {}", senderWallet.getPublicAddress());
             return;
         }
         var senderOutput = recipientOpt.get();
