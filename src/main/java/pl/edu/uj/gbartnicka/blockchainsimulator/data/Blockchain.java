@@ -4,7 +4,9 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.util.CollectionUtils;
+import pl.edu.uj.gbartnicka.blockchainsimulator.utils.Jsonable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +16,7 @@ import static pl.edu.uj.gbartnicka.blockchainsimulator.configuration.DefaultValu
 
 @Slf4j
 @Data
-public class Blockchain {
+public class Blockchain implements DisposableBean, Jsonable {
 
     private int difficulty;
     private long mineRate = MINE_RATE;
@@ -64,5 +66,10 @@ public class Blockchain {
     @Contract(pure = true)
     private @NotNull Integer adjustDifficulty(long lastBlockTimestamp, long currentTime) {
         return lastBlockTimestamp + mineRate > currentTime ? difficulty + 1 : difficulty - 1;
+    }
+
+    @Override
+    public void destroy() {
+        log.warn("Destroying blockchain...");
     }
 }

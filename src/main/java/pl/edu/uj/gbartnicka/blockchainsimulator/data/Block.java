@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.joda.time.DateTime;
+import pl.edu.uj.gbartnicka.blockchainsimulator.utils.Jsonable;
 
 import java.util.Objects;
 
@@ -11,7 +12,7 @@ import static pl.edu.uj.gbartnicka.blockchainsimulator.utils.ShaSum.sha256;
 
 @Data
 @Slf4j
-public class Block {
+public class Block implements Jsonable {
 
     private final Integer index;
     private final String data;

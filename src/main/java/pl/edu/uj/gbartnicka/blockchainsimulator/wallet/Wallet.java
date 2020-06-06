@@ -1,15 +1,19 @@
 package pl.edu.uj.gbartnicka.blockchainsimulator.wallet;
 
+import com.google.gson.annotations.Expose;
 import io.vavr.control.Try;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.util.encoders.Hex;
 import org.jetbrains.annotations.NotNull;
+import pl.edu.uj.gbartnicka.blockchainsimulator.utils.JsonableExposedOnly;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.keys.CannotSignDataException;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
+import java.security.PublicKey;
 import java.security.Signature;
 
 import static pl.edu.uj.gbartnicka.blockchainsimulator.configuration.DefaultValues.INITIAL_BALANCE;
@@ -17,14 +21,23 @@ import static pl.edu.uj.gbartnicka.blockchainsimulator.wallet.keys.Keys.generate
 
 @Data
 @Slf4j
-public class Wallet {
-    private final KeyPair keyPair;
+public class Wallet implements JsonableExposedOnly, Serializable {
+    private static final long serialVersionUID = 1436085228654294618L;
+
+    private final transient KeyPair keyPair;
+    private final PublicKey publicKey;
+    private final byte[] encodedPriv;
+
+    @Expose
     private final String publicAddress;
+    @Expose
     private BigDecimal balance = INITIAL_BALANCE;
 
     public Wallet() {
         this.keyPair = generateKeys();
+        this.publicKey = keyPair.getPublic();
         this.publicAddress = Hex.toHexString(keyPair.getPublic().getEncoded());
+        this.encodedPriv = keyPair.getPrivate().getEncoded();
         log.info("New wallet created {}", publicAddress);
     }
 

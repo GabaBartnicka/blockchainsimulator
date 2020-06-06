@@ -1,8 +1,10 @@
 package pl.edu.uj.gbartnicka.blockchainsimulator.wallet;
 
+import com.google.gson.annotations.Expose;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import pl.edu.uj.gbartnicka.blockchainsimulator.utils.JsonableExposedOnly;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,7 +13,8 @@ import java.util.Optional;
 
 @Data
 @Slf4j
-public class TransactionPool {
+public class TransactionPool implements JsonableExposedOnly {
+    @Expose
     private List<Transaction> transactions = new ArrayList<>();
 
     public void addOrUpdate(@NotNull Transaction transaction) {

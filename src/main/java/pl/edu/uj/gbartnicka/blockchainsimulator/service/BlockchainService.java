@@ -14,8 +14,6 @@ import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.Peer;
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.PeerConnector;
 import pl.edu.uj.gbartnicka.blockchainsimulator.utils.hooks.SnapshotHandler;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -32,16 +30,16 @@ public class BlockchainService {
 
     private final AtomicBoolean free = new AtomicBoolean(true);
 
-    @PreDestroy
-    public void snapshot() {
-        log.info("Destroying");
-        saveBlockchainToFile.save();
-    }
-
-    @PostConstruct
-    public void load() {
-        saveBlockchainToFile.read().ifPresent(b -> blockchain.replaceChains(b.getChain()));
-    }
+//    @PreDestroy
+//    public void snapshot() {
+//        log.info("Destroying");
+//        saveBlockchainToFile.save();
+//    }
+//
+//    @PostConstruct
+//    public void load() {
+//        saveBlockchainToFile.read().ifPresent(b -> blockchain.replaceChains(b.getChain()));
+//    }
 
     public Block getLastBlock() {
         return blockchain.getLastBlock();

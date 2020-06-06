@@ -1,11 +1,13 @@
 package pl.edu.uj.gbartnicka.blockchainsimulator.wallet;
 
 import com.google.gson.Gson;
+import com.google.gson.annotations.Expose;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.joda.time.DateTime;
+import pl.edu.uj.gbartnicka.blockchainsimulator.utils.JsonableExposedOnly;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.keys.Keys;
 
 import java.math.BigDecimal;
@@ -19,9 +21,12 @@ import static pl.edu.uj.gbartnicka.blockchainsimulator.utils.ShaSum.sha256;
 
 @Slf4j
 @Data
-public class Transaction {
+public class Transaction implements JsonableExposedOnly {
+    @Expose
     private final UUID id;
+    @Expose
     private Input input;
+    @Expose
     private List<Output> outputs = new ArrayList<>();
 
     public Transaction(@NotNull Wallet senderWallet, @NotNull String recipientAddress, @NotNull BigDecimal amount) {
@@ -86,9 +91,12 @@ public class Transaction {
 
     @Data
     static class Input {
+        @Expose
         final long timestamp;
+        @Expose
         final BigDecimal amount;
         final PublicKey senderPublicKey;
+        @Expose
         final String senderAddress;
         final byte[] signature;
     }
@@ -96,7 +104,9 @@ public class Transaction {
     @Data
     @AllArgsConstructor
     static class Output {
+        @Expose
         final String address;
+        @Expose
         BigDecimal deltaAmount;
     }
 }

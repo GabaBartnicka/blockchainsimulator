@@ -7,7 +7,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import pl.edu.uj.gbartnicka.blockchainsimulator.data.Blockchain;
+import pl.edu.uj.gbartnicka.blockchainsimulator.hooks.DataLoader;
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.Peer;
+import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.Wallet;
 
 import java.security.Security;
 
@@ -24,7 +26,12 @@ public class BlockchainSimulatorApplication {
 
     @Bean
     Blockchain blockchain() {
-        return new Blockchain();
+        return DataLoader.readBlockchain(myself()).orElseGet(Blockchain::new);
+    }
+
+    @Bean
+    Wallet wallet() {
+        return DataLoader.readWallet(myself()).orElseGet(Wallet::new);
     }
 
     public static void main(String[] args) {

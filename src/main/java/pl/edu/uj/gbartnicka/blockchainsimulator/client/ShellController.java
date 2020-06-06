@@ -1,7 +1,5 @@
 package pl.edu.uj.gbartnicka.blockchainsimulator.client;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.shell.standard.ShellComponent;
@@ -14,7 +12,10 @@ import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.Peer;
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.PeerConnector;
 import pl.edu.uj.gbartnicka.blockchainsimulator.service.BlockchainService;
 import pl.edu.uj.gbartnicka.blockchainsimulator.utils.hooks.SnapshotHandler;
+import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.TransactionPool;
+import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.Wallet;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 @Slf4j
@@ -26,8 +27,10 @@ public class ShellController {
     private final PeerConnector peerConnector;
     private final Blockchain blockchain;
     private final SnapshotHandler saveBlockchainToFile;
-
     private final BlockchainService blockchainService;
+
+    private final Wallet wallet;
+    private final TransactionPool transactionPool = new TransactionPool();
 
     @ShellMethod("add new peer with given port")
     public void addPeer(@ShellOption Integer port) {
@@ -54,17 +57,12 @@ public class ShellController {
     @ShellMethod("get all blockchain")
     public void blockchain() {
         log.info("Blockchain info: {}", blockchain);
-
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        var json = gson.toJson(blockchain);
-        log.info(json);
+        log.info(blockchain.toPrettyJson());
     }
 
     @ShellMethod("get block with index")
     public void block(Integer index) {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        var json = gson.toJson(blockchain.getChain().get(index));
-        log.info("Block {}", json);
+        log.info("Block {}", blockchain.getChain().get(index).toPrettyJson());
     }
 
     @ShellMethod("make snapshot")
@@ -77,5 +75,21 @@ public class ShellController {
     public void sync(@ShellOption String peer) {
         Optional<Peer> p = neighbourhoodService.peer(peer);
         p.ifPresentOrElse(blockchainService::synchronizeWith, () -> log.warn("Peer {} not found :-(", peer));
+    }
+
+    @ShellMethod("prints transaction pool")
+    public void transactions() {
+        log.info(transactionPool.toPrettyJson());
+    }
+
+    @ShellMethod("prints wallet info")
+    public void wallet() {
+        log.info(wallet.toPrettyJson());
+    }
+
+    @ShellMethod("makesTransaction")
+    public void transfer(@ShellOption String recipient, @ShellOption Long amount) {
+        final var transaction = wallet.createTransaction(recipient, BigDecimal.valueOf(amount), transactionPool);
+        log.info(transaction.toPrettyJson());
     }
 }

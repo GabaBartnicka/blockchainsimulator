@@ -12,7 +12,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -37,16 +36,5 @@ public class SnapshotHandler {
         Try.of(() -> Files.writeString(filePath, json, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE))
                 .onFailure(e -> log.error("Cannot save into the file {} - {}", filePath, e.getMessage(), e))
                 .onSuccess(b -> log.info("Saved into the file {}", filePath));
-    }
-
-    public Optional<Blockchain> read() {
-        var filename = me.getPort() + "_" + me.getHost() + "_db.txt";
-        Path filePath = Paths.get("src", "main", "resources", "db", filename);
-
-        return Try.of(() -> Files.readString(filePath))
-                .onSuccess(b -> log.info("Loaded blockchain from {}", filePath))
-                .onFailure(e -> log.error("Cannot read file {}", filePath))
-                .map(json -> Optional.of(new Gson().fromJson(json, Blockchain.class)))
-                .getOrElse(Optional.empty());
     }
 }
