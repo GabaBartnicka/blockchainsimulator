@@ -54,7 +54,7 @@ class TransactionTest {
     @Test
     void testCorrupted() {
         var transaction = new Transaction(new Wallet(), "asdf", BigDecimal.ONE);
-        transaction.setOutputs(Collections.singletonList(new Transaction.Output(BigDecimal.ZERO, "as")));
+        transaction.setOutputs(Collections.singletonList(new Transaction.Output("as", BigDecimal.ZERO)));
 
         assertThat(transaction).isNotNull();
         assertThat(transaction.verify()).isFalse();

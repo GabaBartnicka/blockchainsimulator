@@ -34,8 +34,8 @@ public class Transaction {
         }
 
         final var postBalance = senderWallet.getBalance().subtract(amount);
-        final var senderInfo = new Output(postBalance, senderWallet.getPublicAddress());
-        final var recipientInfo = new Output(postBalance, recipientAddress);
+        final var senderInfo = new Output(senderWallet.getPublicAddress(), postBalance);
+        final var recipientInfo = new Output(recipientAddress, postBalance);
         addOutput(senderInfo);
         addOutput(recipientInfo);
         attachSignature(senderWallet);
@@ -74,7 +74,7 @@ public class Transaction {
         }
 
         senderOutput.deltaAmount = senderOutput.deltaAmount.subtract(amount);
-        addOutput(new Output(amount, recipientAddress));
+        addOutput(new Output(recipientAddress, amount));
         attachSignature(senderWallet);
     }
 
