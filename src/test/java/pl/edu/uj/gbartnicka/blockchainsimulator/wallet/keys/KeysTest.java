@@ -4,11 +4,11 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class KeysGeneratorTest {
+class KeysTest {
 
     @Test
     void generateKeys() {
-        final var keyPair = KeysGenerator.generateKeys();
+        final var keyPair = Keys.generateKeys();
         assertThat(keyPair).isNotNull();
     }
 }

@@ -16,5 +16,7 @@ class WalletTest {
         logger.info(wallet.toString());
 
         assertThat(wallet).hasNoNullFieldsOrProperties();
+
+        wallet.sign("sth");
     }
 }

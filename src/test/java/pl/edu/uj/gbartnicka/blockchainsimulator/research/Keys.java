@@ -4,6 +4,7 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.Test;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.spec.ECGenParameterSpec;
 import java.security.spec.InvalidKeySpecException;
@@ -77,13 +78,13 @@ public class Keys {
 
         // do sign
         ecdsaSign.initSign(pair.getPrivate());
-        ecdsaSign.update(plaintext.getBytes("UTF-8"));
+        ecdsaSign.update(plaintext.getBytes(StandardCharsets.UTF_8));
         byte[] signature = ecdsaSign.sign();
 
         // verify
         Signature ecdsaVerify = Signature.getInstance("SHA256withECDSA", "BC");
         ecdsaVerify.initVerify(pair.getPublic());
-        ecdsaVerify.update(plaintext.getBytes("UTF-8"));
+        ecdsaVerify.update(plaintext.getBytes(StandardCharsets.UTF_8));
         boolean result = ecdsaVerify.verify(signature);
         assertThat(result).isTrue();
     }
