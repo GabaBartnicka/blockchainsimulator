@@ -8,6 +8,9 @@ import org.jetbrains.annotations.NotNull;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.spec.ECGenParameterSpec;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
+import java.util.Optional;
 
 @Slf4j
 public class Keys {
@@ -35,5 +38,25 @@ public class Keys {
         })
                 .onFailure(e -> log.error("Cannot sign data! {}", e.getMessage()))
                 .getOrElseThrow(e -> new CannotSignDataException(e.getMessage(), e));
+    }
+
+    public static Optional<KeyPair> recover(byte[] encodedPriv, PublicKey publicKey) {
+        return Try.of(() -> {
+            // A KeyFactory is used to convert encoded keys to their actual Java classes
+            KeyFactory ecKeyFac = KeyFactory.getInstance("EC", "BC");
+
+            // Now do a round-trip for a private key,
+            // now take the encoded value and recreate the private key
+            PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(encodedPriv);
+            PrivateKey privateKey = ecKeyFac.generatePrivate(pkcs8EncodedKeySpec);
+
+            // And a round trip for the public key as well.
+            byte[] encodedPub = publicKey.getEncoded();
+            X509EncodedKeySpec x509EncodedKeySpec = new X509EncodedKeySpec(encodedPub);
+            PublicKey publicKey2 = ecKeyFac.generatePublic(x509EncodedKeySpec);
+            return Optional.of(new KeyPair(publicKey2, privateKey));
+        })
+                .onFailure(e -> log.info("Cannot recover keys: {}", e.getMessage()))
+                .getOrElse(Optional::empty);
     }
 }

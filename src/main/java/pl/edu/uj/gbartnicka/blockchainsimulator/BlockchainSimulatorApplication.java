@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import pl.edu.uj.gbartnicka.blockchainsimulator.data.Blockchain;
 import pl.edu.uj.gbartnicka.blockchainsimulator.hooks.DataLoader;
+import pl.edu.uj.gbartnicka.blockchainsimulator.hooks.SnapshotCreator;
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.Peer;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.Wallet;
 
@@ -19,24 +20,27 @@ public class BlockchainSimulatorApplication {
     @Value("${spring.rsocket.server.port}")
     int port;
 
+    public static void main(String[] args) {
+        Security.addProvider(new BouncyCastleProvider());
+        SpringApplication.run(BlockchainSimulatorApplication.class, args);
+    }
+
     @Bean
     Peer myself() {
-        return new Peer(port);
+        final var peer = new Peer(port);
+        DataLoader.loadPeer(peer);
+        SnapshotCreator.loadPeer(peer);
+        return peer;
     }
 
     @Bean
     Blockchain blockchain() {
-        return DataLoader.readBlockchain(myself()).orElseGet(Blockchain::new);
+        return DataLoader.readBlockchain().orElseGet(Blockchain::new);
     }
 
     @Bean
     Wallet wallet() {
-        return DataLoader.readWallet(myself()).orElseGet(Wallet::new);
-    }
-
-    public static void main(String[] args) {
-        Security.addProvider(new BouncyCastleProvider());
-        SpringApplication.run(BlockchainSimulatorApplication.class, args);
+        return DataLoader.readWallet().orElseGet(Wallet::new);
     }
 
 }

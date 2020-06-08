@@ -3,9 +3,12 @@ package pl.edu.uj.gbartnicka.blockchainsimulator.wallet;
 import com.google.gson.annotations.Expose;
 import io.vavr.control.Try;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.util.encoders.Hex;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.DisposableBean;
+import pl.edu.uj.gbartnicka.blockchainsimulator.hooks.SnapshotCreator;
 import pl.edu.uj.gbartnicka.blockchainsimulator.utils.JsonableExposedOnly;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.keys.CannotSignDataException;
 
@@ -21,10 +24,11 @@ import static pl.edu.uj.gbartnicka.blockchainsimulator.wallet.keys.Keys.generate
 
 @Data
 @Slf4j
-public class Wallet implements JsonableExposedOnly, Serializable {
+@EqualsAndHashCode(exclude = "keypair")
+public class Wallet implements JsonableExposedOnly, Serializable, DisposableBean {
     private static final long serialVersionUID = 1436085228654294618L;
 
-    private final transient KeyPair keyPair;
+    private transient KeyPair keyPair;
     private final PublicKey publicKey;
     private final byte[] encodedPriv;
 
@@ -69,5 +73,17 @@ public class Wallet implements JsonableExposedOnly, Serializable {
             pool.addOrUpdate(transaction);
             return transaction;
         }
+    }
+
+    @Override
+    public void destroy() {
+        SnapshotCreator.saveSerializedWallet(this);
+    }
+
+    public void attachKeyPair(@NotNull KeyPair keyPair) {
+        if (!keyPair.getPublic().equals(publicKey)) {
+            throw new IllegalArgumentException("Invalid key pair!");
+        }
+        this.keyPair = keyPair;
     }
 }

@@ -7,34 +7,46 @@ import org.jetbrains.annotations.NotNull;
 import pl.edu.uj.gbartnicka.blockchainsimulator.data.Blockchain;
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.Peer;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.Wallet;
+import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.keys.Keys;
 
+import java.io.FileInputStream;
+import java.io.ObjectInputStream;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Optional;
+
+import static pl.edu.uj.gbartnicka.blockchainsimulator.hooks.SnapshotCreator.pathDirectoryPeerBased;
 
 @Slf4j
 public class DataLoader {
+    private static Peer PEER;
 
-    public static Optional<Blockchain> readBlockchain(@NotNull Peer me) {
-        var filename = me.getPort() + "_" + me.getHost() + "_db.txt";
-        Path filePath = Paths.get("src", "main", "resources", "db", filename);
+    public static Optional<Blockchain> readBlockchain() {
+        final var filePath = pathDirectoryPeerBased(Blockchain.class.getSimpleName().toLowerCase() + "_db.txt");
 
         return Try.of(() -> Files.readString(filePath))
                 .onSuccess(b -> log.info("Loaded blockchain from {}", filePath))
                 .onFailure(e -> log.error("Cannot read file {}", filePath))
                 .map(json -> Optional.of(new Gson().fromJson(json, Blockchain.class)))
-                .getOrElse(Optional.empty());
+                .getOrElse(Optional::empty);
     }
 
-    public static Optional<Wallet> readWallet(@NotNull Peer me) {
-        var filename = me.getPort() + "_" + me.getHost() + "_wallet.txt";
-        Path filePath = Paths.get("src", "main", "resources", "db", filename);
+    public static Optional<Wallet> readWallet() {
+        final var filePath = pathDirectoryPeerBased(Wallet.class.getSimpleName().toLowerCase() + "_db.txt");
+        return Try.of(() -> {
+            var fileInputStream = new FileInputStream(filePath.toFile());
+            var objectInputStream = new ObjectInputStream(fileInputStream);
+            var wallet = (Wallet) objectInputStream.readObject();
 
-        return Try.of(() -> Files.readString(filePath))
+            wallet.attachKeyPair(Keys.recover(wallet.getEncodedPriv(), wallet.getPublicKey()).orElseThrow(() -> new IllegalArgumentException("Cannot recover wallet keys!")));
+            objectInputStream.close();
+            return Optional.of(wallet);
+        })
                 .onSuccess(b -> log.info("Loaded blockchain from {}", filePath))
-                .onFailure(e -> log.error("Cannot read file {}", filePath))
-                .map(json -> Optional.of(new Gson().fromJson(json, Wallet.class)))
-                .getOrElse(Optional.empty());
+                .onFailure(e -> log.error("Cannot read file {}", filePath, e))
+                .getOrElse(Optional::empty);
+    }
+
+    public static void loadPeer(@NotNull Peer peer) {
+        PEER = peer;
     }
 }

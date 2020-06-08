@@ -70,6 +70,6 @@ public class Blockchain implements DisposableBean, Jsonable {
 
     @Override
     public void destroy() {
-        log.warn("Destroying blockchain...");
+        snapshot();
     }
 }

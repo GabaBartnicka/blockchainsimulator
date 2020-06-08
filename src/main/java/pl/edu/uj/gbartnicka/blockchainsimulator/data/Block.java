@@ -51,6 +51,7 @@ public class Block implements Jsonable {
         var zeroStr = "0".repeat(Math.max(0, lastBlockDifficulty));
         do {
             nonce++;
+            timestamp = DateTime.now().getMillis();
             hash = calculateHash();
         } while (!Objects.equals(hash.substring(0, lastBlockDifficulty), zeroStr));
 

@@ -69,8 +69,8 @@ class WalletTest {
         PublicKey publicKey2 = ecKeyFac.generatePublic(x509EncodedKeySpec);
         System.out.println(publicKey2);
 
+        assertThat(wallet.getKeyPair().getPublic()).isEqualTo(publicKey2);
         assertThat(wallet.getKeyPair().getPrivate()).isEqualTo(privateKey2);
+//        assertThat(wallet.getKeyPair()).isEqualTo(new KeyPair(publicKey2, privateKey2));
     }
-
-
 }
