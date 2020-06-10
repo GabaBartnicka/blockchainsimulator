@@ -37,3 +37,7 @@ jobs:
         java-version: 14.0.1
     - name: Unit tests
       run: bash ./gradlew test --stacktrace
+    - name: Junit Report to Annotations
+      uses: ashley-taylor/junit-report-annotations-action@1.1
+    - name: Report jUnit Annotations as Github Actions Annotations
+      uses: shyim/junit-report-annotations-action@0.1.5
