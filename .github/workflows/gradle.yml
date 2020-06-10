@@ -28,3 +28,4 @@ jobs:
     - uses: ashley-taylor/junit-report-annotations-action@1.1
       with:
         access-token: bef7add35a183b28be00cdf3e266767f7938a1b5
+      if: always()
