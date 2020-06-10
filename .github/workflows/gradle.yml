@@ -38,11 +38,7 @@ jobs:
     - name: Unit tests
       run: bash ./gradlew test --stacktrace
     - name: Junit Report to Annotations
-      uses: ashley-taylor/junit-report-annotations-action@1.1
-    - name: Report jUnit Annotations as Github Actions Annotations
-      uses: shyim/junit-report-annotations-action@0.1.5
-      
-    - uses: ashley-taylor/junit-report-annotations-action@v1.1
+    - uses: ashley-taylor/junit-report-annotations-action@1.1
       if: always()
       with:
         access-token: bef7add35a183b28be00cdf3e266767f7938a1b5
