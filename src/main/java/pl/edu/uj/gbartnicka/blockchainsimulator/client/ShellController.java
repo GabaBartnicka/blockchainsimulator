@@ -11,7 +11,6 @@ import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.NeighbourhoodServi
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.Peer;
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.PeerConnector;
 import pl.edu.uj.gbartnicka.blockchainsimulator.service.BlockchainService;
-import pl.edu.uj.gbartnicka.blockchainsimulator.utils.hooks.SnapshotHandler;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.TransactionPool;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.Wallet;
 
@@ -26,7 +25,6 @@ public class ShellController {
     private final NeighbourhoodService neighbourhoodService;
     private final PeerConnector peerConnector;
     private final Blockchain blockchain;
-    private final SnapshotHandler saveBlockchainToFile;
     private final BlockchainService blockchainService;
 
     private final Wallet wallet;
@@ -39,8 +37,8 @@ public class ShellController {
 
     @ShellMethod("list all peers")
     public void listPeers() {
-        var all = neighbourhoodService.peers().stream().map(Peer::toString).reduce((s, s2) -> s + "\n" + s2).get();
-        log.info("Peers: \n{}", all);
+        neighbourhoodService.peers().stream().map(Peer::toString).reduce((s, s2) -> s + "\n" + s2)
+                .ifPresentOrElse(p -> log.info("Peers: \n{}", p), () -> log.info("No peers available!"));
     }
 
     @ShellMethod("send ping message")
@@ -67,7 +65,7 @@ public class ShellController {
 
     @ShellMethod("make snapshot")
     public void snapshot() {
-        saveBlockchainToFile.save();
+        blockchain.snapshot();
         log.info("Done.");
     }
 
@@ -87,7 +85,7 @@ public class ShellController {
         log.info(wallet.toPrettyJson());
     }
 
-    @ShellMethod("makesTransaction")
+    @ShellMethod("creates new transaction")
     public void transfer(@ShellOption String recipient, @ShellOption Long amount) {
         final var transaction = wallet.createTransaction(recipient, BigDecimal.valueOf(amount), transactionPool);
         log.info(transaction.toPrettyJson());

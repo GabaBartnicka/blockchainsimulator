@@ -28,7 +28,7 @@ public class BlockchainSimulatorApplication {
     @Bean
     Peer myself() {
         final var peer = new Peer(port);
-        DataLoader.loadPeer(peer);
+        log.info("You are {}", peer);
         SnapshotCreator.loadPeer(peer);
         return peer;
     }

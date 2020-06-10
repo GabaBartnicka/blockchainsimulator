@@ -3,6 +3,7 @@ package pl.edu.uj.gbartnicka.blockchainsimulator.service;
 import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import pl.edu.uj.gbartnicka.blockchainsimulator.data.Block;
@@ -12,7 +13,6 @@ import pl.edu.uj.gbartnicka.blockchainsimulator.data.BlockchainEnvelope;
 import pl.edu.uj.gbartnicka.blockchainsimulator.events.NewBlockMinedEvent;
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.Peer;
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.PeerConnector;
-import pl.edu.uj.gbartnicka.blockchainsimulator.utils.hooks.SnapshotHandler;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -23,29 +23,18 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Slf4j
 public class BlockchainService {
     private final Blockchain blockchain;
-    private final SnapshotHandler saveBlockchainToFile;
     private final ApplicationEventPublisher publisher;
     private final Peer myself;
     private final PeerConnector peerConnector;
 
     private final AtomicBoolean free = new AtomicBoolean(true);
 
-//    @PreDestroy
-//    public void snapshot() {
-//        log.info("Destroying");
-//        saveBlockchainToFile.save();
-//    }
-//
-//    @PostConstruct
-//    public void load() {
-//        saveBlockchainToFile.read().ifPresent(b -> blockchain.replaceChains(b.getChain()));
-//    }
-
+    @NotNull
     public Block getLastBlock() {
         return blockchain.getLastBlock();
     }
 
-    public void mine(Block block) {
+    public void mine(@NotNull Block block) {
         if (!free.get()) {
             log.warn("Mining in progress");
             return;
@@ -63,7 +52,7 @@ public class BlockchainService {
         return new BlockchainEnvelope(blockchain, myself);
     }
 
-    public void synchronizeWith(Peer peer) {
+    public void synchronizeWith(@NotNull Peer peer) {
         final var blockchainEnvelope = peerConnector.askForBlockchain(peer);
         if (blockchainEnvelope == null)
             return;
@@ -72,7 +61,7 @@ public class BlockchainService {
             blockchain.replaceChains(blockchainEnvelope.getBlockchain().getChain());
     }
 
-    public void onNewBlock(String blockEnvelope) {
+    public void onNewBlock(@NotNull String blockEnvelope) {
         blockchain.forceAddNewBlock(new Gson().fromJson(blockEnvelope, BlockEnvelope.class).getBlock());
     }
 }

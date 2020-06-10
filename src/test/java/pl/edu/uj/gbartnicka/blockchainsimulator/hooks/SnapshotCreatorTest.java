@@ -48,7 +48,6 @@ class SnapshotCreatorTest {
 
         assertThat(blockchainFile.exists()).isTrue();
 
-        DataLoader.loadPeer(me);
         final var readBlockchain = DataLoader.readBlockchain();
 
         assertThat(readBlockchain).isPresent().get().isEqualTo(blockchain);

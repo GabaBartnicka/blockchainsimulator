@@ -3,9 +3,7 @@ package pl.edu.uj.gbartnicka.blockchainsimulator.hooks;
 import com.google.gson.Gson;
 import io.vavr.control.Try;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import pl.edu.uj.gbartnicka.blockchainsimulator.data.Blockchain;
-import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.Peer;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.Wallet;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.keys.Keys;
 
@@ -18,8 +16,6 @@ import static pl.edu.uj.gbartnicka.blockchainsimulator.hooks.SnapshotCreator.pat
 
 @Slf4j
 public class DataLoader {
-    private static Peer PEER;
-
     public static Optional<Blockchain> readBlockchain() {
         final var filePath = pathDirectoryPeerBased(Blockchain.class.getSimpleName().toLowerCase() + "_db.txt");
 
@@ -41,12 +37,8 @@ public class DataLoader {
             objectInputStream.close();
             return Optional.of(wallet);
         })
-                .onSuccess(b -> log.info("Loaded blockchain from {}", filePath))
+                .onSuccess(b -> log.info("Loaded wallet from {}", filePath))
                 .onFailure(e -> log.error("Cannot read file {}", filePath, e))
                 .getOrElse(Optional::empty);
-    }
-
-    public static void loadPeer(@NotNull Peer peer) {
-        PEER = peer;
     }
 }

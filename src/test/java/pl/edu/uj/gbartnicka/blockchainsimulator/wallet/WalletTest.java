@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.*;
 import java.math.BigDecimal;
+import java.nio.file.Paths;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
@@ -72,5 +73,7 @@ class WalletTest {
         assertThat(wallet.getKeyPair().getPublic()).isEqualTo(publicKey2);
         assertThat(wallet.getKeyPair().getPrivate()).isEqualTo(privateKey2);
 //        assertThat(wallet.getKeyPair()).isEqualTo(new KeyPair(publicKey2, privateKey2));
+
+        assertThat(Paths.get("yourfile.txt").toFile().delete()).isTrue();
     }
 }
