@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import io.vavr.control.Try;
 import lombok.extern.slf4j.Slf4j;
 import pl.edu.uj.gbartnicka.blockchainsimulator.data.Blockchain;
+import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.TransactionPool;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.Wallet;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.keys.Keys;
 
@@ -39,6 +40,17 @@ public class DataLoader {
         })
                 .onSuccess(b -> log.info("Loaded wallet from {}", filePath))
                 .onFailure(e -> log.error("Cannot read file {}", filePath, e))
+                .getOrElse(Optional::empty);
+    }
+
+    public static Optional<TransactionPool> readTransactionPool() {
+        final var filePath = pathDirectoryPeerBased(TransactionPool.class.getSimpleName().toLowerCase() + "_db.txt");
+
+        return Try.of(() -> Files.readString(filePath))
+                .onSuccess(b -> log.info("Loaded transaction pool from {}", filePath))
+                .onFailure(e -> log.error("Cannot read file {}", filePath))
+                .map(json -> Optional.of(new Gson().fromJson(json, TransactionPool.class)))
+                .onFailure(e -> log.warn("Cannot un-json value: {}", e.getMessage()))
                 .getOrElse(Optional::empty);
     }
 }

@@ -15,11 +15,6 @@ public interface JsonableExposedOnly extends Jsonable {
 
     @Override
     default String toJson() {
-        Gson gson = new GsonBuilder()
-                .excludeFieldsWithoutExposeAnnotation()
-                .create();
-        return gson.toJson(this);
+        return toJson(true);
     }
-
-
 }

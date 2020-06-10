@@ -3,7 +3,6 @@ package pl.edu.uj.gbartnicka.blockchainsimulator.wallet;
 import com.google.gson.annotations.Expose;
 import io.vavr.control.Try;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.util.encoders.Hex;
 import org.jetbrains.annotations.NotNull;
@@ -24,7 +23,6 @@ import static pl.edu.uj.gbartnicka.blockchainsimulator.wallet.keys.Keys.generate
 
 @Data
 @Slf4j
-@EqualsAndHashCode(exclude = "keypair")
 public class Wallet implements JsonableExposedOnly, Serializable, DisposableBean {
     private static final long serialVersionUID = 1436085228654294618L;
 

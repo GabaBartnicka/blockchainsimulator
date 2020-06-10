@@ -28,7 +28,7 @@ public class ShellController {
     private final BlockchainService blockchainService;
 
     private final Wallet wallet;
-    private final TransactionPool transactionPool = new TransactionPool();
+    private final TransactionPool transactionPool;
 
     @ShellMethod("add new peer with given port")
     public void addPeer(@ShellOption Integer port) {

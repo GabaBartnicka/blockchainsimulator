@@ -7,7 +7,7 @@ import pl.edu.uj.gbartnicka.blockchainsimulator.hooks.SnapshotCreator;
 
 public interface Jsonable {
     default String toJson() {
-        return new Gson().toJson(this);
+        return toJson(false);
     }
 
     default String toPrettyJson() {
@@ -16,11 +16,18 @@ public interface Jsonable {
     }
 
     default void snapshot() {
-        SnapshotCreator.save(toJson(), filename());
+        SnapshotCreator.save(toJson(false), filename());
     }
 
     @NotNull
     default String filename() {
         return this.getClass().getSimpleName().toLowerCase() + "_db.txt";
+    }
+
+    default String toJson(boolean exposedOnly) {
+        var gsonBuilder = new GsonBuilder();
+        if (exposedOnly)
+            gsonBuilder.excludeFieldsWithoutExposeAnnotation();
+        return gsonBuilder.create().toJson(this);
     }
 }

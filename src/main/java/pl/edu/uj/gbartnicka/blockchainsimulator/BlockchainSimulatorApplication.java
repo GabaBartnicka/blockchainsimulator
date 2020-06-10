@@ -10,6 +10,7 @@ import pl.edu.uj.gbartnicka.blockchainsimulator.data.Blockchain;
 import pl.edu.uj.gbartnicka.blockchainsimulator.hooks.DataLoader;
 import pl.edu.uj.gbartnicka.blockchainsimulator.hooks.SnapshotCreator;
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.Peer;
+import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.TransactionPool;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.Wallet;
 
 import java.security.Security;
@@ -43,4 +44,8 @@ public class BlockchainSimulatorApplication {
         return DataLoader.readWallet().orElseGet(Wallet::new);
     }
 
+    @Bean
+    TransactionPool transactionPool() {
+        return DataLoader.readTransactionPool().orElseGet(TransactionPool::new);
+    }
 }

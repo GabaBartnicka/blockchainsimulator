@@ -4,6 +4,7 @@ import com.google.gson.annotations.Expose;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.DisposableBean;
 import pl.edu.uj.gbartnicka.blockchainsimulator.utils.JsonableExposedOnly;
 
 import java.util.ArrayList;
@@ -13,7 +14,7 @@ import java.util.Optional;
 
 @Data
 @Slf4j
-public class TransactionPool implements JsonableExposedOnly {
+public class TransactionPool implements DisposableBean, JsonableExposedOnly {
     @Expose
     private List<Transaction> transactions = new ArrayList<>();
 
@@ -31,5 +32,10 @@ public class TransactionPool implements JsonableExposedOnly {
 
     public Optional<Transaction> findExistingForSenderAddress(@NotNull String publicAddress) {
         return transactions.stream().filter(t -> t.getInput().getSenderAddress().equals(publicAddress)).findAny();
+    }
+
+    @Override
+    public void destroy() {
+        snapshot();
     }
 }

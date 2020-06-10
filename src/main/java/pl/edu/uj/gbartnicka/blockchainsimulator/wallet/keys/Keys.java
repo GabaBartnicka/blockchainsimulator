@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.nio.charset.StandardCharsets;
 import java.security.*;
+import java.security.interfaces.ECPublicKey;
 import java.security.spec.ECGenParameterSpec;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
@@ -40,7 +41,21 @@ public class Keys {
                 .getOrElseThrow(e -> new CannotSignDataException(e.getMessage(), e));
     }
 
-    public static Optional<KeyPair> recover(byte[] encodedPriv, PublicKey publicKey) {
+    public static boolean verify(@NotNull byte[] signature, @NotNull String plainData, @NotNull byte[] encoded) {
+        return verify(signature, plainData, decodePublicKey(encoded));
+    }
+
+    public static PublicKey decodePublicKey(@NotNull byte[] encoded) {
+        return Try.of(() -> {
+            X509EncodedKeySpec ks = new X509EncodedKeySpec(encoded);
+            KeyFactory kf = KeyFactory.getInstance("ECDH");
+            return (ECPublicKey) kf.generatePublic(ks);
+        })
+                .onFailure(e -> log.error("Cannot decode key: {}", e.getMessage(), e))
+                .getOrElseThrow(() -> new IllegalArgumentException("Cannot decode the key!"));
+    }
+
+    public static Optional<KeyPair> recover(byte[] encodedPriv, @NotNull PublicKey publicKey) {
         return Try.of(() -> {
             // A KeyFactory is used to convert encoded keys to their actual Java classes
             KeyFactory ecKeyFac = KeyFactory.getInstance("EC", "BC");

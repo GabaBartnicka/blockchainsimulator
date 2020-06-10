@@ -11,7 +11,6 @@ import pl.edu.uj.gbartnicka.blockchainsimulator.utils.JsonableExposedOnly;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.keys.Keys;
 
 import java.math.BigDecimal;
-import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -47,7 +46,7 @@ public class Transaction implements JsonableExposedOnly {
 
     private void attachSignature(@NotNull Wallet senderWallet) {
         this.input = new Input(DateTime.now().getMillis(),
-                senderWallet.getBalance(), senderWallet.getKeyPair().getPublic(), senderWallet.getPublicAddress(),
+                senderWallet.getBalance(), senderWallet.getKeyPair().getPublic().getEncoded(), senderWallet.getPublicAddress(),
                 senderWallet.sign(hashData()));
     }
 
@@ -90,12 +89,13 @@ public class Transaction implements JsonableExposedOnly {
     }
 
     @Data
+    @AllArgsConstructor
     static class Input {
         @Expose
         final long timestamp;
         @Expose
         final BigDecimal amount;
-        final PublicKey senderPublicKey;
+        final byte[] senderPublicKey;
         @Expose
         final String senderAddress;
         final byte[] signature;

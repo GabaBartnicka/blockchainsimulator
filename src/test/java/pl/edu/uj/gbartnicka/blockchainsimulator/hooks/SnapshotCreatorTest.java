@@ -9,9 +9,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import pl.edu.uj.gbartnicka.blockchainsimulator.data.Block;
 import pl.edu.uj.gbartnicka.blockchainsimulator.data.Blockchain;
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.Peer;
+import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.Transaction;
+import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.TransactionPool;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.Wallet;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.nio.file.Paths;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,6 +30,7 @@ class SnapshotCreatorTest {
     private final File dirFile = Paths.get("src", "main", "resources", "db", dir).toFile();
     private final File blockchainFile = Paths.get("src", "main", "resources", "db", dir, "blockchain_db.txt").toFile();
     private final File walletFile = Paths.get("src", "main", "resources", "db", dir, "wallet_db.txt").toFile();
+    private final File transactionPoolFile = Paths.get("src", "main", "resources", "db", dir, "transactionpool_db.txt").toFile();
 
     @Mock
     private Peer me;
@@ -54,7 +58,7 @@ class SnapshotCreatorTest {
     }
 
     @Test
-    void saveWallet() {
+    void saveWalletAndTransactions() {
         var wallet = new Wallet();
         SnapshotCreator.loadPeer(me);
         SnapshotCreator.saveSerializedWallet(wallet);
@@ -70,16 +74,27 @@ class SnapshotCreatorTest {
         assertThat(loadedWallet).isEqualTo(wallet);
         assertThat(recovered.getPublic()).isEqualTo(wallet.getPublicKey());
         assertThat(recovered.getPrivate()).isEqualTo(wallet.getKeyPair().getPrivate());
+
+        final var pool = new TransactionPool();
+        final var t1 = new Transaction(wallet, "asdf", BigDecimal.valueOf(2L));
+        final var t2 = new Transaction(wallet, "asdfg", BigDecimal.valueOf(3L));
+        pool.addOrUpdate(t1);
+        pool.addOrUpdate(t2);
+
+        pool.snapshot();
+        assertThat(DataLoader.readTransactionPool()).isPresent().get().isEqualTo(pool);
     }
 
     @AfterEach
     void tearDown() {
         blockchainFile.delete();
         walletFile.delete();
+        transactionPoolFile.delete();
         dirFile.delete();
 
         assertThat(blockchainFile).doesNotExist();
         assertThat(walletFile).doesNotExist();
+        assertThat(transactionPoolFile).doesNotExist();
         assertThat(dirFile).doesNotExist();
     }
 }
