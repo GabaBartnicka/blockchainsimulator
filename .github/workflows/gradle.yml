@@ -45,4 +45,4 @@ jobs:
     - uses: ashley-taylor/junit-report-annotations-action@v1.1
       if: always()
       with:
-        access-token: ${{ bef7add35a183b28be00cdf3e266767f7938a1b5 }}
+        access-token: bef7add35a183b28be00cdf3e266767f7938a1b5
