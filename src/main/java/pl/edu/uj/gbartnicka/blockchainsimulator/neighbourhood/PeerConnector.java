@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import io.vavr.control.Try;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.messaging.rsocket.RSocketRequester;
 import org.springframework.stereotype.Service;
 import pl.edu.uj.gbartnicka.blockchainsimulator.data.BlockchainEnvelope;
@@ -11,7 +12,10 @@ import pl.edu.uj.gbartnicka.blockchainsimulator.data.SimpleMessage;
 import reactor.core.publisher.Mono;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -48,7 +52,7 @@ public class PeerConnector {
         }).onFailure(e -> log.error("Cannot send ping to peer {} - {}", peer, e.getMessage()));
     }
 
-    public BlockchainEnvelope askForBlockchain(Peer peer) {
+    public BlockchainEnvelope askForBlockchain(@NotNull Peer peer) {
         var data = new SimpleMessage("ping", myself);
         if (!connections.containsKey(peer)) {
             log.warn("No connection to peer {}, trying to establish", peer);
@@ -63,13 +67,29 @@ public class PeerConnector {
         }).onFailure(e -> log.error("Cannot send ping to peer {} - {}", peer, e.getMessage())).getOrNull();
     }
 
-    public void newBlockMined(String block) {
-        connections.keySet().forEach(peer -> {
-                    final RSocketRequester rSocketRequester = connections.get(peer).block();
-                    var response = rSocketRequester.route("new-block").data(block).retrieveMono(String.class).block();
-                    log.debug("Response: {}", response);
-                }
-        );
+    public void sendNewBlockInfoToAll(@NotNull String block) {
+        sendToAll(block, "new-block");
+    }
 
+    public void sendNewTransactionToAll(@NotNull String transaction) {
+        sendToAll(transaction, "new-transaction");
+    }
+
+    @NotNull
+    private List<String> sendToAll(@NotNull String data, @NotNull String route) {
+        return connections.keySet().stream().map(peer -> sendToOne(peer, data, route)).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
+    }
+
+    private Optional<String> sendToOne(@NotNull Peer peer, @NotNull String data, @NotNull String route) {
+        log.info("Sending data via {} to {}", route, peer);
+        final RSocketRequester rSocketRequester = connections.get(peer).block();
+        if (rSocketRequester != null) {
+            var response = rSocketRequester.route(route).data(data).retrieveMono(String.class).block();
+            log.debug("Response: {}", response);
+            return Optional.ofNullable(response);
+        } else {
+            log.warn("Connection problem with peer {}", peer);
+        }
+        return Optional.empty();
     }
 }

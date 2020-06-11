@@ -11,6 +11,7 @@ import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.NeighbourhoodServi
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.Peer;
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.PeerConnector;
 import pl.edu.uj.gbartnicka.blockchainsimulator.service.BlockchainService;
+import pl.edu.uj.gbartnicka.blockchainsimulator.service.TransactionService;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.TransactionPool;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.Wallet;
 
@@ -29,6 +30,7 @@ public class ShellController {
 
     private final Wallet wallet;
     private final TransactionPool transactionPool;
+    private final TransactionService transactionService;
 
     @ShellMethod("add new peer with given port")
     public void addPeer(@ShellOption Integer port) {
@@ -87,7 +89,13 @@ public class ShellController {
 
     @ShellMethod("creates new transaction")
     public void transfer(@ShellOption String recipient, @ShellOption Long amount) {
-        final var transaction = wallet.createTransaction(recipient, BigDecimal.valueOf(amount), transactionPool);
+        final var transaction = transactionService.createAndBroadcastTransaction(recipient, BigDecimal.valueOf(amount));
+        log.info(transaction.toPrettyJson());
+    }
+
+    @ShellMethod("creates new example transaction")
+    public void et() {
+        final var transaction = transactionService.createAndBroadcastTransaction("asdf", BigDecimal.ONE);
         log.info(transaction.toPrettyJson());
     }
 }
