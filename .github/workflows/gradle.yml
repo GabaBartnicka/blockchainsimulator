@@ -24,22 +24,3 @@ jobs:
       run: chmod +x gradlew
     - name: Build with Gradle
       run: ./gradlew build
-  
-  test:
-    name: Run Unit Tests
-    runs-on: ubuntu-latest
-    
-    steps:
-    - uses: actions/checkout@v2
-    - name: Set up JDK 14.0.1 (openjdk-14)
-      uses: actions/setup-java@v1
-      with:
-        java-version: 14.0.1
-    - name: Unit tests
-      run: bash ./gradlew test --stacktrace
-    - name: Junit Report to Annotations
-      uses: ashley-taylor/junit-report-annotations-action@1.1
-      with:
-        access-token: bef7add35a183b28be00cdf3e266767f7938a1b5
-    - name: Report jUnit Annotations as Github Actions Annotations
-      uses: shyim/junit-report-annotations-action@0.1.5
