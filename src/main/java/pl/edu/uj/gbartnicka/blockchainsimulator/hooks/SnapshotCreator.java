@@ -19,6 +19,19 @@ public class SnapshotCreator {
 
     public static void loadPeer(@NotNull Peer peer) {
         PEER = peer;
+        Path filePathDirectory = Paths.get("src", "main", "resources", "db");
+        if (!filePathDirectory.toFile().exists()) {
+            final var mkdir = filePathDirectory.toFile().mkdir();
+            log.info("Directory {} created={}", filePathDirectory.toString(), mkdir);
+        }
+
+        var peerBased = PEER.getHost() + "_" + PEER.getPort();
+
+        final var peerBasedFile = Paths.get("src", "main", "resources", "db", peerBased);
+        if (!peerBasedFile.toFile().exists()) {
+            final var peerBasedMkdir = peerBasedFile.toFile().mkdir();
+            log.info("Directory {} created={}", peerBasedFile.toString(), peerBasedMkdir);
+        }
     }
 
     public static void save(@NotNull String json, @NotNull String filename) {
