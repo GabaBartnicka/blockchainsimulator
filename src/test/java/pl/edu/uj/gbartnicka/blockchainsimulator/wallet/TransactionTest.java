@@ -1,6 +1,7 @@
 package pl.edu.uj.gbartnicka.blockchainsimulator.wallet;
 
 import org.junit.jupiter.api.Test;
+import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.keys.Keys;
 
 import java.math.BigDecimal;
 import java.util.Collections;
@@ -14,7 +15,7 @@ class TransactionTest {
     void testConstructAndUpdate() {
         final var senderWallet = new Wallet();
         final var initialBalance = senderWallet.getBalance();
-        final var recipientAddress = "asdf";
+        final var recipientAddress = new PublicAddress(Keys.generateKeys().getPublic());
         final var firstAmount = BigDecimal.ONE;
         var transaction = new Transaction(senderWallet, recipientAddress, firstAmount);
 
@@ -24,7 +25,7 @@ class TransactionTest {
         assertThat(transaction.verify()).isTrue();
 
         final var secondAmount = BigDecimal.valueOf(2L);
-        transaction.update(senderWallet, "asddd", secondAmount);
+        transaction.update(senderWallet, new PublicAddress(Keys.generateKeys().getPublic()), secondAmount);
 
         assertThat(transaction).isNotNull();
         assertThat(transaction.getOutputs()).hasSize(3);
@@ -36,10 +37,11 @@ class TransactionTest {
     void testConstructAndUpdateFail() {
         final var senderWallet = new Wallet();
         final var initialBalance = senderWallet.getBalance();
-        final var recipientAddress = "asdf";
+        final var recipientAddress = new PublicAddress(Keys.generateKeys().getPublic());
         final var firstAmount = BigDecimal.valueOf(4L);
         var transaction = new Transaction(senderWallet, recipientAddress, firstAmount);
 
+        assertThat(transaction.isValid()).isTrue();
         assertThat(transaction).isNotNull();
         assertThat(transaction.getOutputs()).hasSize(2);
         assertThat(transaction.getOutputs().get(0).getDeltaAmount()).isEqualTo(initialBalance.subtract(firstAmount));
@@ -48,13 +50,13 @@ class TransactionTest {
         final var secondAmount = BigDecimal.valueOf(7L);
 
         assertThatExceptionOfType(BalanceExceededException.class)
-                .isThrownBy(() -> transaction.update(senderWallet, "asddd", secondAmount));
+                .isThrownBy(() -> transaction.update(senderWallet, new PublicAddress(Keys.generateKeys().getPublic()), secondAmount));
     }
 
     @Test
     void testCorrupted() {
-        var transaction = new Transaction(new Wallet(), "asdf", BigDecimal.ONE);
-        transaction.setOutputs(Collections.singletonList(new Transaction.Output("as", BigDecimal.ZERO)));
+        var transaction = new Transaction(new Wallet(), new PublicAddress(Keys.generateKeys().getPublic()), BigDecimal.ONE);
+        transaction.setOutputs(Collections.singletonList(new Transaction.Output(new PublicAddress(Keys.generateKeys().getPublic()), BigDecimal.ZERO)));
 
         assertThat(transaction).isNotNull();
         assertThat(transaction.verify()).isFalse();
@@ -63,6 +65,6 @@ class TransactionTest {
     @Test
     void testInvalid() {
         assertThatExceptionOfType(BalanceExceededException.class)
-                .isThrownBy(() -> new Transaction(new Wallet(), "asdf", BigDecimal.valueOf(100)));
+                .isThrownBy(() -> new Transaction(new Wallet(), new PublicAddress(Keys.generateKeys().getPublic()), BigDecimal.valueOf(100)));
     }
 }

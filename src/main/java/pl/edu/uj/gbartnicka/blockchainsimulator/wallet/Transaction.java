@@ -11,10 +11,7 @@ import pl.edu.uj.gbartnicka.blockchainsimulator.utils.JsonableExposedOnly;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.keys.Keys;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static pl.edu.uj.gbartnicka.blockchainsimulator.utils.ShaSum.sha256;
 
@@ -24,11 +21,15 @@ public class Transaction implements JsonableExposedOnly {
     @Expose
     private final UUID id;
     @Expose
-    private Input input;
+    protected Input input;
     @Expose
-    private List<Output> outputs = new ArrayList<>();
+    protected List<Output> outputs = new ArrayList<>();
 
-    public Transaction(@NotNull Wallet senderWallet, @NotNull String recipientAddress, @NotNull BigDecimal amount) {
+    protected Transaction(@NotNull UUID id) {
+        this.id = id;
+    }
+
+    public Transaction(@NotNull Wallet senderWallet, @NotNull PublicAddress recipientAddress, @NotNull BigDecimal amount) {
         id = UUID.randomUUID();
         log.info("Created transaction with id: {}", id.toString());
         if (senderWallet.getBalance().compareTo(amount) < 0) {
@@ -38,20 +39,23 @@ public class Transaction implements JsonableExposedOnly {
 
         final var postBalance = senderWallet.getBalance().subtract(amount);
         final var senderInfo = new Output(senderWallet.getPublicAddress(), postBalance);
-        final var recipientInfo = new Output(recipientAddress, postBalance);
-        addOutput(senderInfo);
-        addOutput(recipientInfo);
+        final var recipientInfo = new Output(recipientAddress, amount);
+        addOutputsAndSign(senderWallet, senderInfo, recipientInfo);
+    }
+
+    protected void addOutputsAndSign(@NotNull Wallet senderWallet, @NotNull Output... outputs) {
+        this.outputs.addAll(Arrays.asList(outputs));
         attachSignature(senderWallet);
     }
 
-    private void attachSignature(@NotNull Wallet senderWallet) {
+    protected void attachSignature(@NotNull Wallet senderWallet) {
         this.input = new Input(DateTime.now().getMillis(),
-                senderWallet.getBalance(), senderWallet.getKeyPair().getPublic().getEncoded(), senderWallet.getPublicAddress(),
+                senderWallet.getBalance(), senderWallet.getPublicAddress(),
                 senderWallet.sign(hashData()));
     }
 
     public boolean verify() {
-        return Keys.verify(input.signature, hashData(), input.senderPublicKey);
+        return Keys.verify(input.signature, hashData(), input.senderAddress.getEncoded());
     }
 
     public void addOutput(@NotNull Output output) {
@@ -62,7 +66,7 @@ public class Transaction implements JsonableExposedOnly {
         return sha256(new Gson().toJson(outputs));
     }
 
-    public void update(@NotNull Wallet senderWallet, @NotNull String recipientAddress, @NotNull BigDecimal amount) {
+    public void update(@NotNull Wallet senderWallet, @NotNull PublicAddress recipientAddress, @NotNull BigDecimal amount) {
         var senderAddress = senderWallet.getPublicAddress();
         final var recipientOpt = findSenderRelatedOutput(senderAddress);
         log.info("Updating transaction {} for sender {}", getId().toString(), senderWallet.getPublicAddress());
@@ -83,8 +87,19 @@ public class Transaction implements JsonableExposedOnly {
         attachSignature(senderWallet);
     }
 
+    public boolean isValid() {
+        var outputSum = outputs.stream().map(Output::getDeltaAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+        if (!Objects.equals(outputSum, input.getAmount())) {
+            log.warn("Invalid transaction from {}. Amounts malformed, i={}, o={}",
+                    input.getSenderAddress(), input.getAmount(), outputSum);
+            return false;
+        }
+
+        return verify();
+    }
+
     @NotNull
-    private Optional<Output> findSenderRelatedOutput(@NotNull String senderAddress) {
+    private Optional<Output> findSenderRelatedOutput(@NotNull PublicAddress senderAddress) {
         return outputs.stream().filter(o -> o.getAddress().equals(senderAddress)).findAny();
     }
 
@@ -95,9 +110,8 @@ public class Transaction implements JsonableExposedOnly {
         final long timestamp;
         @Expose
         final BigDecimal amount;
-        final byte[] senderPublicKey;
         @Expose
-        final String senderAddress;
+        final PublicAddress senderAddress;
         final byte[] signature;
     }
 
@@ -105,7 +119,7 @@ public class Transaction implements JsonableExposedOnly {
     @AllArgsConstructor
     static class Output {
         @Expose
-        final String address;
+        final PublicAddress address;
         @Expose
         BigDecimal deltaAmount;
     }

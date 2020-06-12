@@ -1,6 +1,7 @@
 package pl.edu.uj.gbartnicka.blockchainsimulator.wallet;
 
 import org.junit.jupiter.api.Test;
+import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.keys.Keys;
 
 import java.io.*;
 import java.math.BigDecimal;
@@ -26,11 +27,12 @@ class WalletTest {
 
         wallet.sign("sth");
 
+        var recipient = new PublicAddress(Keys.generateKeys().getPublic());
         var pool = new TransactionPool();
-        wallet.createTransaction("asdf", BigDecimal.ONE, pool);
+        wallet.createTransaction(recipient, BigDecimal.ONE, pool);
         assertThat(pool.getTransactions()).hasSize(1);
 
-        wallet.createTransaction("asdf", BigDecimal.valueOf(2L), pool);
+        wallet.createTransaction(recipient, BigDecimal.valueOf(2L), pool);
         assertThat(pool.getTransactions()).hasSize(1);
     }
 

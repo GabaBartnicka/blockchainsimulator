@@ -4,7 +4,6 @@ import com.google.gson.annotations.Expose;
 import io.vavr.control.Try;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.bouncycastle.util.encoders.Hex;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.DisposableBean;
 import pl.edu.uj.gbartnicka.blockchainsimulator.hooks.SnapshotCreator;
@@ -31,14 +30,14 @@ public class Wallet implements JsonableExposedOnly, Serializable, DisposableBean
     private final byte[] encodedPriv;
 
     @Expose
-    private final String publicAddress;
+    private final PublicAddress publicAddress;
     @Expose
     private BigDecimal balance = INITIAL_BALANCE;
 
     public Wallet() {
         this.keyPair = generateKeys();
         this.publicKey = keyPair.getPublic();
-        this.publicAddress = Hex.toHexString(keyPair.getPublic().getEncoded());
+        this.publicAddress = new PublicAddress(publicKey);
         this.encodedPriv = keyPair.getPrivate().getEncoded();
         log.info("New wallet created {}", publicAddress);
     }
@@ -57,7 +56,7 @@ public class Wallet implements JsonableExposedOnly, Serializable, DisposableBean
     }
 
     @NotNull
-    public Transaction createTransaction(@NotNull String recipient, @NotNull BigDecimal amount, @NotNull TransactionPool pool) {
+    public Transaction createTransaction(@NotNull PublicAddress recipient, @NotNull BigDecimal amount, @NotNull TransactionPool pool) {
         if (amount.compareTo(balance) > 0) {
             throw new BalanceExceededException(this, amount);
         }

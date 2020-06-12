@@ -9,9 +9,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import pl.edu.uj.gbartnicka.blockchainsimulator.data.Block;
 import pl.edu.uj.gbartnicka.blockchainsimulator.data.Blockchain;
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.Peer;
+import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.PublicAddress;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.Transaction;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.TransactionPool;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.Wallet;
+import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.keys.Keys;
 
 import java.io.File;
 import java.math.BigDecimal;
@@ -76,8 +78,8 @@ class SnapshotCreatorTest {
         assertThat(recovered.getPrivate()).isEqualTo(wallet.getKeyPair().getPrivate());
 
         final var pool = new TransactionPool();
-        final var t1 = new Transaction(wallet, "asdf", BigDecimal.valueOf(2L));
-        final var t2 = new Transaction(wallet, "asdfg", BigDecimal.valueOf(3L));
+        final var t1 = new Transaction(wallet, new PublicAddress(Keys.generateKeys().getPublic()), BigDecimal.valueOf(2L));
+        final var t2 = new Transaction(wallet, new PublicAddress(Keys.generateKeys().getPublic()), BigDecimal.valueOf(3L));
         pool.addOrUpdate(t1);
         pool.addOrUpdate(t2);
 

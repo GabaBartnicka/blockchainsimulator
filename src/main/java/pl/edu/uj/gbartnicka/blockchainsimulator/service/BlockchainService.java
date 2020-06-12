@@ -13,6 +13,7 @@ import pl.edu.uj.gbartnicka.blockchainsimulator.data.BlockchainEnvelope;
 import pl.edu.uj.gbartnicka.blockchainsimulator.events.NewBlockMinedEvent;
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.Peer;
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.PeerConnector;
+import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.TransactionPool;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -26,6 +27,7 @@ public class BlockchainService {
     private final ApplicationEventPublisher publisher;
     private final Peer myself;
     private final PeerConnector peerConnector;
+    private final TransactionPool transactionPool;
 
     private final AtomicBoolean free = new AtomicBoolean(true);
 
@@ -35,6 +37,12 @@ public class BlockchainService {
     }
 
     public void mine(@NotNull Block block) {
+        transactionPool.validTransactions();
+        // include reward for miner
+        // create a block with valid  transactions
+        // synchronize chain p2p
+        // clear transaction pool and ask others
+
         if (!free.get()) {
             log.warn("Mining in progress");
             return;

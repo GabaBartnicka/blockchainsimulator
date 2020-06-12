@@ -1,8 +1,10 @@
 package pl.edu.uj.gbartnicka.blockchainsimulator.wallet;
 
 import org.junit.jupiter.api.Test;
+import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.keys.Keys;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -11,7 +13,7 @@ class TransactionPoolTest {
     @Test
     void addOrUpdateTest() {
         var senderWallet = new Wallet();
-        var address = "address";
+        var address = new PublicAddress(Keys.generateKeys().getPublic());
         var transaction1 = new Transaction(senderWallet, address, BigDecimal.ONE);
         var transactionPool = new TransactionPool();
 
@@ -19,11 +21,13 @@ class TransactionPoolTest {
         transactionPool.addOrUpdate(transaction1);
         assertThat(transactionPool.getTransactions()).hasSize(1);
         assertThat(transactionPool.getTransactions()).first().isEqualTo(transaction1);
+        assertThat(transactionPool.validTransactions()).isEqualTo(transactionPool.getTransactions());
 
         // update
         transaction1.update(senderWallet, address, BigDecimal.valueOf(2L));
         assertThat(transactionPool.getTransactions()).hasSize(1);
         assertThat(transactionPool.getTransactions()).first().isEqualTo(transaction1);
+        assertThat(transactionPool.validTransactions()).isEqualTo(transactionPool.getTransactions());
 
         // add second
         var transaction2 = new Transaction(new Wallet(), address, BigDecimal.ONE);
@@ -31,6 +35,23 @@ class TransactionPoolTest {
         assertThat(transactionPool.getTransactions()).hasSize(2);
         assertThat(transactionPool.getTransactions()).first().isEqualTo(transaction1);
         assertThat(transactionPool.getTransactions()).last().isEqualTo(transaction2);
+        assertThat(transactionPool.validTransactions()).isEqualTo(transactionPool.getTransactions());
+    }
+
+    @Test
+    void testWithInvalidTransaction() {
+        var transactionPool = new TransactionPool();
+
+        final var senderWallet = new Wallet();
+        var invalid = new Transaction(senderWallet, new PublicAddress(Keys.generateKeys().getPublic()), BigDecimal.ONE);
+        invalid.setOutputs(Collections.singletonList(new Transaction.Output(new PublicAddress(Keys.generateKeys().getPublic()), BigDecimal.valueOf(2))));
+        var valid = new Transaction(senderWallet, new PublicAddress(Keys.generateKeys().getPublic()), BigDecimal.valueOf(3));
+
+        transactionPool.addOrUpdate(valid);
+        transactionPool.addOrUpdate(invalid);
+
+        assertThat(transactionPool.validTransactions()).containsOnly(valid);
+        assertThat(transactionPool.getTransactions()).containsExactly(valid, invalid);
     }
 
     @Test

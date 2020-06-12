@@ -12,6 +12,7 @@ import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.Peer;
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.PeerConnector;
 import pl.edu.uj.gbartnicka.blockchainsimulator.service.BlockchainService;
 import pl.edu.uj.gbartnicka.blockchainsimulator.service.TransactionService;
+import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.PublicAddress;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.TransactionPool;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.Wallet;
 
@@ -89,13 +90,13 @@ public class ShellController {
 
     @ShellMethod("creates new transaction")
     public void transfer(@ShellOption String recipient, @ShellOption Long amount) {
-        final var transaction = transactionService.createAndBroadcastTransaction(recipient, BigDecimal.valueOf(amount));
+        final var transaction = transactionService.createAndBroadcastTransaction(new PublicAddress(recipient), BigDecimal.valueOf(amount));
         log.info(transaction.toPrettyJson());
     }
 
     @ShellMethod("creates new example transaction")
     public void et() {
-        final var transaction = transactionService.createAndBroadcastTransaction("asdf", BigDecimal.ONE);
+        final var transaction = transactionService.createAndBroadcastTransaction(new PublicAddress("asdf"), BigDecimal.ONE);
         log.info(transaction.toPrettyJson());
     }
 }

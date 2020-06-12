@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Data
 @Slf4j
@@ -30,12 +31,17 @@ public class TransactionPool implements DisposableBean, JsonableExposedOnly {
                 });
     }
 
-    public Optional<Transaction> findExistingForSenderAddress(@NotNull String publicAddress) {
+    public Optional<Transaction> findExistingForSenderAddress(@NotNull PublicAddress publicAddress) {
         return transactions.stream().filter(t -> t.getInput().getSenderAddress().equals(publicAddress)).findAny();
     }
 
     @Override
     public void destroy() {
         snapshot();
+    }
+
+    @NotNull
+    public List<Transaction> validTransactions() {
+        return transactions.stream().filter(Transaction::isValid).collect(Collectors.toList());
     }
 }
