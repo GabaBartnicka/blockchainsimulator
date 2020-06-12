@@ -34,12 +34,12 @@ public class DataLoader {
             var objectInputStream = new ObjectInputStream(fileInputStream);
             var wallet = (Wallet) objectInputStream.readObject();
 
-            wallet.attachKeyPair(Keys.recover(wallet.getEncodedPriv(), wallet.getPublicKey()).orElseThrow(() -> new IllegalArgumentException("Cannot recover wallet keys!")));
+            wallet.attachKeyPair(Keys.recover(wallet.getEncodedPriv(), wallet.getPublicAddress().toPubKey()).orElseThrow(() -> new IllegalArgumentException("Cannot recover wallet keys!")));
             objectInputStream.close();
             return Optional.of(wallet);
         })
                 .onSuccess(b -> log.info("Loaded wallet from {}", filePath))
-                .onFailure(e -> log.error("Cannot read file {}", filePath, e))
+                .onFailure(e -> log.error("Cannot read file {}", filePath))
                 .getOrElse(Optional::empty);
     }
 

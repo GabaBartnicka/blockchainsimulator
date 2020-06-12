@@ -14,8 +14,8 @@ import static pl.edu.uj.gbartnicka.blockchainsimulator.utils.ShaSum.sha256;
 @Slf4j
 public class Block implements Jsonable {
 
-    private final Integer index;
-    private final String data;
+    private final BlockchainData data;
+    private Integer index;
     private String hash;
     private String prevHash;
     private long timestamp;
@@ -23,9 +23,16 @@ public class Block implements Jsonable {
 
     private Integer difficulty;
 
+    public Block(@NotNull BlockchainData data) {
+        this.data = data;
+
+        this.nonce = 0;
+        this.timestamp = DateTime.now().getMillis();
+    }
+
     public Block(@NotNull Integer index, @NotNull String data) {
         this.index = index;
-        this.data = data;
+        this.data = new BlockchainData(data);
 
         this.nonce = 0;
         this.timestamp = DateTime.now().getMillis();
@@ -33,7 +40,7 @@ public class Block implements Jsonable {
 
     public Block(@NotNull Integer index, @NotNull String data, @NotNull Integer difficulty) {
         this.index = index;
-        this.data = data;
+        this.data = new BlockchainData(data);
 
         this.nonce = 0;
         this.timestamp = DateTime.now().getMillis();

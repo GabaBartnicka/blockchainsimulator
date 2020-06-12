@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
-import pl.edu.uj.gbartnicka.blockchainsimulator.events.NewPeerDetectedEvent;
+import pl.edu.uj.gbartnicka.blockchainsimulator.events.types.NewPeerDetectedEvent;
 
 import javax.annotation.PostConstruct;
 import java.util.HashSet;

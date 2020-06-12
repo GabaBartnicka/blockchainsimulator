@@ -82,14 +82,13 @@ public class PeerConnector {
 
     private Optional<String> sendToOne(@NotNull Peer peer, @NotNull String data, @NotNull String route) {
         log.info("Sending data via {} to {}", route, peer);
-        final RSocketRequester rSocketRequester = connections.get(peer).block();
-        if (rSocketRequester != null) {
+        return Try.of(() -> {
+            final RSocketRequester rSocketRequester = connections.get(peer).block();
             var response = rSocketRequester.route(route).data(data).retrieveMono(String.class).block();
             log.debug("Response: {}", response);
             return Optional.ofNullable(response);
-        } else {
-            log.warn("Connection problem with peer {}", peer);
-        }
-        return Optional.empty();
+
+        }).onFailure(e -> log.error("Cannot send data via route {} to peer {} because of: {}", peer, route, e.getMessage()))
+                .getOrElse(Optional::empty);
     }
 }

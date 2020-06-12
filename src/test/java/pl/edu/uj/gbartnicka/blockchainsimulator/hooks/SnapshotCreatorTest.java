@@ -74,7 +74,7 @@ class SnapshotCreatorTest {
         final var recovered = loadedWallet.getKeyPair();
 
         assertThat(loadedWallet).isEqualTo(wallet);
-        assertThat(recovered.getPublic()).isEqualTo(wallet.getPublicKey());
+        assertThat(recovered.getPublic()).isEqualTo(wallet.getKeyPair().getPublic());
         assertThat(recovered.getPrivate()).isEqualTo(wallet.getKeyPair().getPrivate());
 
         final var pool = new TransactionPool();

@@ -1,4 +1,4 @@
-package pl.edu.uj.gbartnicka.blockchainsimulator.events;
+package pl.edu.uj.gbartnicka.blockchainsimulator.events.types;
 
 import lombok.Getter;
 import org.springframework.context.ApplicationEvent;

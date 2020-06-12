@@ -1,11 +1,12 @@
 package pl.edu.uj.gbartnicka.blockchainsimulator.client;
 
+import com.devskiller.jfairy.Fairy;
+import com.devskiller.jfairy.producer.person.Person;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
-import pl.edu.uj.gbartnicka.blockchainsimulator.data.Block;
 import pl.edu.uj.gbartnicka.blockchainsimulator.data.Blockchain;
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.NeighbourhoodService;
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.Peer;
@@ -18,6 +19,7 @@ import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.Wallet;
 
 import java.math.BigDecimal;
 import java.util.Optional;
+import java.util.Random;
 
 @Slf4j
 @ShellComponent
@@ -51,19 +53,24 @@ public class ShellController {
     }
 
     @ShellMethod("mine new block")
-    public void mine(@ShellOption Integer index, @ShellOption String data) {
-        blockchainService.mine(new Block(index, data));
+    public void mine() {
+        blockchainService.mine();
     }
 
     @ShellMethod("get all blockchain")
     public void blockchain() {
-        log.info("Blockchain info: {}", blockchain);
+        log.info("Blockchain chains: {}", blockchain.getChain().size());
         log.info(blockchain.toPrettyJson());
     }
 
     @ShellMethod("get block with index")
     public void block(Integer index) {
         log.info("Block {}", blockchain.getChain().get(index).toPrettyJson());
+    }
+
+    @ShellMethod("get last block")
+    public void lastBlock() {
+        log.info("Block {}", blockchain.getLastBlock().toPrettyJson());
     }
 
     @ShellMethod("make snapshot")
@@ -96,7 +103,16 @@ public class ShellController {
 
     @ShellMethod("creates new example transaction")
     public void et() {
-        final var transaction = transactionService.createAndBroadcastTransaction(new PublicAddress("asdf"), BigDecimal.ONE);
-        log.info(transaction.toPrettyJson());
+        int n = 3;
+        Fairy fairy = Fairy.create();
+        Random rand = new Random();
+
+        for (int i = 0; i < n; i++) {
+            Person person = fairy.person();
+            var pubAddress = new PublicAddress(person.getFullName());
+
+            var t = transactionService.createAndBroadcastTransaction(pubAddress, BigDecimal.valueOf(rand.nextFloat()));
+            log.info(t.toPrettyJson());
+        }
     }
 }

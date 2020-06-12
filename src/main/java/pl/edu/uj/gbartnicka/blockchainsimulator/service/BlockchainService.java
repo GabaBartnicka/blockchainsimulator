@@ -6,14 +6,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
-import pl.edu.uj.gbartnicka.blockchainsimulator.data.Block;
-import pl.edu.uj.gbartnicka.blockchainsimulator.data.BlockEnvelope;
-import pl.edu.uj.gbartnicka.blockchainsimulator.data.Blockchain;
-import pl.edu.uj.gbartnicka.blockchainsimulator.data.BlockchainEnvelope;
-import pl.edu.uj.gbartnicka.blockchainsimulator.events.NewBlockMinedEvent;
+import pl.edu.uj.gbartnicka.blockchainsimulator.data.*;
+import pl.edu.uj.gbartnicka.blockchainsimulator.events.types.NewBlockMinedEvent;
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.Peer;
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.PeerConnector;
+import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.RewardTransaction;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.TransactionPool;
+import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.Wallet;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -28,6 +27,7 @@ public class BlockchainService {
     private final Peer myself;
     private final PeerConnector peerConnector;
     private final TransactionPool transactionPool;
+    private final Wallet wallet;
 
     private final AtomicBoolean free = new AtomicBoolean(true);
 
@@ -36,12 +36,18 @@ public class BlockchainService {
         return blockchain.getLastBlock();
     }
 
-    public void mine(@NotNull Block block) {
-        transactionPool.validTransactions();
-        // include reward for miner
-        // create a block with valid  transactions
-        // synchronize chain p2p
-        // clear transaction pool and ask others
+    public void mine() {
+        final var validTransactions = transactionPool.validTransactions();
+
+        if (validTransactions.isEmpty()) {
+            log.warn("No transactions in pool!");
+            return;
+        }
+
+        var rewardTransaction = new RewardTransaction(wallet, blockchain.getWallet());
+        validTransactions.add(rewardTransaction);
+
+        Block block = new Block(new BlockchainData(validTransactions));
 
         if (!free.get()) {
             log.warn("Mining in progress");
@@ -53,6 +59,7 @@ public class BlockchainService {
             final var newBlock = blockchain.mine(block);
             free.set(true);
             publisher.publishEvent(new NewBlockMinedEvent(new BlockEnvelope(newBlock, myself), this));
+            transactionPool.clear();
         });
     }
 

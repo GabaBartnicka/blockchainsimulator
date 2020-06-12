@@ -14,7 +14,6 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
-import java.security.PublicKey;
 import java.security.Signature;
 
 import static pl.edu.uj.gbartnicka.blockchainsimulator.configuration.DefaultValues.INITIAL_BALANCE;
@@ -26,18 +25,16 @@ public class Wallet implements JsonableExposedOnly, Serializable, DisposableBean
     private static final long serialVersionUID = 1436085228654294618L;
 
     private transient KeyPair keyPair;
-    private final PublicKey publicKey;
     private final byte[] encodedPriv;
 
     @Expose
-    private final PublicAddress publicAddress;
+    protected final PublicAddress publicAddress;
     @Expose
     private BigDecimal balance = INITIAL_BALANCE;
 
     public Wallet() {
         this.keyPair = generateKeys();
-        this.publicKey = keyPair.getPublic();
-        this.publicAddress = new PublicAddress(publicKey);
+        this.publicAddress = new PublicAddress(keyPair.getPublic());
         this.encodedPriv = keyPair.getPrivate().getEncoded();
         log.info("New wallet created {}", publicAddress);
     }
@@ -78,7 +75,7 @@ public class Wallet implements JsonableExposedOnly, Serializable, DisposableBean
     }
 
     public void attachKeyPair(@NotNull KeyPair keyPair) {
-        if (!keyPair.getPublic().equals(publicKey)) {
+        if (!keyPair.getPublic().equals(this.publicAddress.toPubKey())) {
             throw new IllegalArgumentException("Invalid key pair!");
         }
         this.keyPair = keyPair;

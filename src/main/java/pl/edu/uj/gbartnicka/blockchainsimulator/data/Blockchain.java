@@ -6,7 +6,9 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.util.CollectionUtils;
+import pl.edu.uj.gbartnicka.blockchainsimulator.utils.Exclude;
 import pl.edu.uj.gbartnicka.blockchainsimulator.utils.Jsonable;
+import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.BlockchainWallet;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,21 +24,28 @@ public class Blockchain implements DisposableBean, Jsonable {
     private long mineRate = MINE_RATE;
     private List<Block> chain = new ArrayList<>();
 
+    @Exclude
+    private BlockchainWallet wallet;
+
     public Blockchain() {
         this.difficulty = INITIAL_DIFFICULTY;
         chain.add(new Block(0, "Block genesis", difficulty));
 
         log.info("Created blockchain with difficulty {} and mine rate {}", difficulty, mineRate);
+
+        this.wallet = new BlockchainWallet();
     }
 
     public void addBlock(@NotNull Block newBlock) {
         var prev = getLastBlock();
         log.info("Previous block {}, start mining with difficulty {}", prev, difficulty);
 
+        newBlock.setIndex(prev.getIndex() + 1);
         newBlock.setPrevHash(prev.getHash());
-        newBlock.mineBlock(prev.getDifficulty());
+        newBlock.mineBlock(difficulty);
 
-        difficulty = adjustDifficulty(prev.getTimestamp(), newBlock.getTimestamp());
+        difficulty = adjustDifficulty(prev.getTimestamp(), newBlock.getTimestamp(), difficulty);
+
         log.info("New difficulty is {}", difficulty);
 
         chain.add(newBlock);
@@ -64,7 +73,7 @@ public class Blockchain implements DisposableBean, Jsonable {
     }
 
     @Contract(pure = true)
-    private @NotNull Integer adjustDifficulty(long lastBlockTimestamp, long currentTime) {
+    private @NotNull Integer adjustDifficulty(long lastBlockTimestamp, long currentTime, Integer difficulty) {
         return lastBlockTimestamp + mineRate > currentTime ? difficulty + 1 : difficulty - 1;
     }
 

@@ -88,14 +88,19 @@ public class Transaction implements JsonableExposedOnly {
     }
 
     public boolean isValid() {
-        var outputSum = outputs.stream().map(Output::getDeltaAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
-        if (!Objects.equals(outputSum, input.getAmount())) {
+        var outputSum = allOutputsAmount();
+        if (outputSum.equals(input.getAmount())) {
             log.warn("Invalid transaction from {}. Amounts malformed, i={}, o={}",
                     input.getSenderAddress(), input.getAmount(), outputSum);
             return false;
         }
 
         return verify();
+    }
+
+    @NotNull
+    public BigDecimal allOutputsAmount() {
+        return outputs.stream().map(Output::getDeltaAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     @NotNull

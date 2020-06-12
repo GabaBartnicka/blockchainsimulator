@@ -13,4 +13,8 @@ public class RewardTransaction extends Transaction {
         addOutputsAndSign(blockchainWallet, new Output(minerWallet.getPublicAddress(), MINING_REWARD));
     }
 
+    @Override
+    public boolean isValid() {
+        return verify();
+    }
 }
