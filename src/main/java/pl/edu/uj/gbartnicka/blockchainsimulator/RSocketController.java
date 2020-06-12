@@ -48,9 +48,9 @@ public class RSocketController {
     }
 
     @MessageMapping("new-transaction")
-    String newTransactionNotification(String envelope) {
-        log.info("Received notification about new transaction: {}", envelope);
-        transactionService.handleIncomingTransaction(envelope);
-        return "";
+    String newTransactionNotification(String transaction) {
+        log.info("Received notification about new transaction: {}", transaction);
+        transactionService.handleIncomingTransaction(transaction);
+        return "ok";
     }
 }

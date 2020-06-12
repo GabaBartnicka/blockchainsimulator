@@ -89,7 +89,7 @@ public class Transaction implements JsonableExposedOnly {
 
     public boolean isValid() {
         var outputSum = allOutputsAmount();
-        if (outputSum.equals(input.getAmount())) {
+        if (!outputSum.equals(input.getAmount())) {
             log.warn("Invalid transaction from {}. Amounts malformed, i={}, o={}",
                     input.getSenderAddress(), input.getAmount(), outputSum);
             return false;
