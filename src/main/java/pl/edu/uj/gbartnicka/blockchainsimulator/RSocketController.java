@@ -10,6 +10,7 @@ import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.NeighbourhoodServi
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.Peer;
 import pl.edu.uj.gbartnicka.blockchainsimulator.service.BlockchainService;
 import pl.edu.uj.gbartnicka.blockchainsimulator.service.TransactionService;
+import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.TransactionPool;
 
 @Slf4j
 @Controller
@@ -20,6 +21,7 @@ public class RSocketController {
     private final NeighbourhoodService neighbourhoodService;
     private final BlockchainService blockchainService;
     private final TransactionService transactionService;
+    private final TransactionPool transactionPool;
 
     @MessageMapping("request-response")
     SimpleMessage requestResponse(SimpleMessage request) {
@@ -52,5 +54,18 @@ public class RSocketController {
         log.info("Received notification about new transaction: {}", transaction);
         transactionService.handleIncomingTransaction(transaction);
         return "ok";
+    }
+
+    @MessageMapping("clear-pool")
+    String clearTransactionPool(String message) {
+        log.info("Received {} message", message);
+        transactionPool.clear();
+        return "ok";
+    }
+
+    @MessageMapping("ping-pong")
+    String pingPong(String request) {
+        log.info("Received request-response request: {}", request);
+        return "pong";
     }
 }

@@ -6,12 +6,13 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import pl.edu.uj.gbartnicka.blockchainsimulator.utils.Jsonable;
 
 @Slf4j
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Peer {
+public class Peer implements Jsonable {
     private String name;
     private Integer port;
     private String host;

@@ -52,6 +52,11 @@ public class ShellController {
         p.ifPresentOrElse(peerConnector::ping, () -> log.warn("Peer {} not found :-(", peer));
     }
 
+    @ShellMethod("send ping message to all")
+    public void pingAll() {
+        peerConnector.pingAll();
+    }
+
     @ShellMethod("mine new block")
     public void mine() {
         blockchainService.mine();

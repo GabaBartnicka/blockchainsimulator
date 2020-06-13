@@ -67,6 +67,10 @@ public class PeerConnector {
         }).onFailure(e -> log.error("Cannot send ping to peer {} - {}", peer, e.getMessage())).getOrNull();
     }
 
+    public void sendClearPoolToAll() {
+        sendToAll("clear pool command", "clear-pool");
+    }
+
     public void sendNewBlockInfoToAll(@NotNull String block) {
         sendToAll(block, "new-block");
     }
@@ -90,5 +94,9 @@ public class PeerConnector {
 
         }).onFailure(e -> log.error("Cannot send data via route {} to peer {} because of: {}", peer, route, e.getMessage()))
                 .getOrElse(Optional::empty);
+    }
+
+    public void pingAll() {
+        sendToAll("ping from " + myself.toString(), "ping-pong");
     }
 }

@@ -4,10 +4,12 @@ import io.vavr.control.Try;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import pl.edu.uj.gbartnicka.blockchainsimulator.events.types.NewPeerDetectedEvent;
+import pl.edu.uj.gbartnicka.blockchainsimulator.hooks.DataLoader;
 
 import javax.annotation.PostConstruct;
 import java.util.HashSet;
@@ -19,7 +21,7 @@ import java.util.stream.Stream;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class NeighbourhoodService {
+public class NeighbourhoodService implements DisposableBean {
 
     private final Set<Peer> peers = new HashSet<>();
 
@@ -30,6 +32,8 @@ public class NeighbourhoodService {
 
     @PostConstruct
     public void initialize() {
+        DataLoader.readPeers().map(Peers::getPeers).ifPresent(peers::addAll);
+
         Try.of(() -> peers.addAll(
                 Stream.of(peersProperty.split(","))
                         .map(Peer::resolve)
@@ -62,5 +66,10 @@ public class NeighbourhoodService {
 
     public Optional<Peer> peer(String name) {
         return peers.stream().filter(p -> p.getName().equals(name)).findFirst();
+    }
+
+    @Override
+    public void destroy() {
+        new Peers(peers).snapshot();
     }
 }

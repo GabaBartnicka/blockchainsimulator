@@ -36,7 +36,6 @@ public class Wallet implements JsonableExposedOnly, Serializable, DisposableBean
         this.keyPair = generateKeys();
         this.publicAddress = new PublicAddress(keyPair.getPublic());
         this.encodedPriv = keyPair.getPrivate().getEncoded();
-        log.info("New wallet created {}", publicAddress);
     }
 
     @NotNull
