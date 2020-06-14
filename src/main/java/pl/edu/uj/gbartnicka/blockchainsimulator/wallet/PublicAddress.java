@@ -8,6 +8,7 @@ import lombok.ToString;
 import org.bouncycastle.util.encoders.Hex;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import pl.edu.uj.gbartnicka.blockchainsimulator.utils.Exclude;
 import pl.edu.uj.gbartnicka.blockchainsimulator.utils.JsonableExposedOnly;
 
 import java.io.Serializable;
@@ -31,6 +32,7 @@ public class PublicAddress implements JsonableExposedOnly, Serializable {
     private String label;
 
     @Nullable
+    @Exclude
     private byte[] encoded;
 
     public PublicAddress(@NotNull PublicKey key) {

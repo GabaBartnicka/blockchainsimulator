@@ -1,20 +1,25 @@
 package pl.edu.uj.gbartnicka.blockchainsimulator.data;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.joda.time.DateTime;
 import pl.edu.uj.gbartnicka.blockchainsimulator.utils.Jsonable;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 import static pl.edu.uj.gbartnicka.blockchainsimulator.utils.ShaSum.sha256;
 
 @Data
 @Slf4j
-public class Block implements Jsonable {
+@NoArgsConstructor
+public class Block implements Jsonable, Serializable {
 
-    private final BlockchainData data;
+    private static final long serialVersionUID = 5740538519770001546L;
+
+    private BlockchainData data;
     private Integer index;
     private String hash;
     private String prevHash;

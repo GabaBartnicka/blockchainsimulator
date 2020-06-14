@@ -12,7 +12,7 @@
 //import org.springframework.shell.Shell;
 //import org.springframework.shell.result.DefaultResultHandler;
 //import pl.edu.uj.gbartnicka.blockchainsimulator.data.Blockchain;
-//import pl.edu.uj.gbartnicka.blockchainsimulator.data.SimpleMessage;
+//import pl.edu.uj.gbartnicka.blockchainsimulator.network.SimpleMessage;
 //import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.Peer;
 //import pl.edu.uj.gbartnicka.blockchainsimulator.service.BlockchainService;
 //import reactor.core.publisher.Mono;

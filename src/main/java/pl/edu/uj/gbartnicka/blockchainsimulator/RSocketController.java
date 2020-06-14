@@ -1,13 +1,19 @@
 package pl.edu.uj.gbartnicka.blockchainsimulator;
 
+import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
-import pl.edu.uj.gbartnicka.blockchainsimulator.data.BlockEnvelope;
-import pl.edu.uj.gbartnicka.blockchainsimulator.data.SimpleMessage;
+import pl.edu.uj.gbartnicka.blockchainsimulator.events.types.NewBlockReceived;
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.NeighbourhoodService;
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.Peer;
+import pl.edu.uj.gbartnicka.blockchainsimulator.network.BlockEnvelope;
+import pl.edu.uj.gbartnicka.blockchainsimulator.network.BlockchainEnvelope;
+import pl.edu.uj.gbartnicka.blockchainsimulator.network.BlockchainRequest;
+import pl.edu.uj.gbartnicka.blockchainsimulator.network.SimpleMessage;
 import pl.edu.uj.gbartnicka.blockchainsimulator.service.BlockchainService;
 import pl.edu.uj.gbartnicka.blockchainsimulator.service.TransactionService;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.TransactionPool;
@@ -22,6 +28,8 @@ public class RSocketController {
     private final BlockchainService blockchainService;
     private final TransactionService transactionService;
     private final TransactionPool transactionPool;
+
+    private final ApplicationEventPublisher publisher;
 
     @MessageMapping("request-response")
     SimpleMessage requestResponse(SimpleMessage request) {
@@ -42,10 +50,19 @@ public class RSocketController {
         return blockchainService.getBlockchain().toJson();
     }
 
+    @MessageMapping("request-blockchain-sync")
+    @NotNull
+    BlockchainEnvelope requestBlockchainSync(@NotNull BlockchainRequest request) {
+        log.info("Received request-blockchain request: {}", request);
+        return blockchainService.envelope();
+    }
+
     @MessageMapping("new-block")
     String newBlockNotification(String envelope) {
         log.info("Received notification about new block: {}", envelope);
-        blockchainService.onNewBlock(envelope);
+
+        publisher.publishEvent(new NewBlockReceived(this, new Gson().fromJson(envelope, BlockEnvelope.class)));
+
         return blockchainService.getBlockchain().toJson();
     }
 

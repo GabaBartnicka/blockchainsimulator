@@ -1,15 +1,16 @@
 package pl.edu.uj.gbartnicka.blockchainsimulator.events.types;
 
 import lombok.Getter;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.context.ApplicationEvent;
 import pl.edu.uj.gbartnicka.blockchainsimulator.network.BlockEnvelope;
 
 @Getter
-public class NewBlockMinedEvent extends ApplicationEvent {
-    private final BlockEnvelope blockEnvelope;
+public class NewBlockReceived extends ApplicationEvent {
+    private final BlockEnvelope block;
 
-    public NewBlockMinedEvent(BlockEnvelope blockEnvelope, Object source) {
+    public NewBlockReceived(Object source, @NotNull BlockEnvelope block) {
         super(source);
-        this.blockEnvelope = blockEnvelope;
+        this.block = block;
     }
 }

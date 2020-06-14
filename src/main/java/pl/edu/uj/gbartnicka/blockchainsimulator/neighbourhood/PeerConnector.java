@@ -5,16 +5,16 @@ import io.vavr.control.Try;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.joda.time.DateTime;
 import org.springframework.messaging.rsocket.RSocketRequester;
 import org.springframework.stereotype.Service;
-import pl.edu.uj.gbartnicka.blockchainsimulator.data.BlockchainEnvelope;
-import pl.edu.uj.gbartnicka.blockchainsimulator.data.SimpleMessage;
+import pl.edu.uj.gbartnicka.blockchainsimulator.network.BlockchainEnvelope;
+import pl.edu.uj.gbartnicka.blockchainsimulator.network.BlockchainRequest;
+import pl.edu.uj.gbartnicka.blockchainsimulator.network.SimpleMessage;
 import reactor.core.publisher.Mono;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -52,6 +52,11 @@ public class PeerConnector {
         }).onFailure(e -> log.error("Cannot send ping to peer {} - {}", peer, e.getMessage()));
     }
 
+    public List<BlockchainEnvelope> askForBlockchain() {
+        final var request = new BlockchainRequest(myself, DateTime.now().getMillis());
+        return sendRequestToAll(request, "request-blockchain-sync", BlockchainEnvelope.class);
+    }
+
     public BlockchainEnvelope askForBlockchain(@NotNull Peer peer) {
         var data = new SimpleMessage("ping", myself);
         if (!connections.containsKey(peer)) {
@@ -84,6 +89,11 @@ public class PeerConnector {
         return connections.keySet().stream().map(peer -> sendToOne(peer, data, route)).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
     }
 
+    @NotNull
+    private <S, T> List<T> sendRequestToAll(@NotNull S data, @NotNull String route, @NotNull Class<T> responseClass) {
+        return connections.keySet().stream().map(peer -> sendRequestToOne(peer, data, responseClass, route)).filter(Objects::nonNull).collect(Collectors.toList());
+    }
+
     private Optional<String> sendToOne(@NotNull Peer peer, @NotNull String data, @NotNull String route) {
         log.info("Sending data via {} to {}", route, peer);
         return Try.of(() -> {
@@ -94,6 +104,19 @@ public class PeerConnector {
 
         }).onFailure(e -> log.error("Cannot send data via route {} to peer {} because of: {}", peer, route, e.getMessage()))
                 .getOrElse(Optional::empty);
+    }
+
+    @Nullable
+    private <T, S> T sendRequestToOne(@NotNull Peer peer, @NotNull S data, @NotNull Class<T> responseClass, @NotNull String route) {
+        log.info("Sending data via {} to {}", route, peer);
+        return Try.of(() -> {
+            final RSocketRequester rSocketRequester = connections.get(peer).block();
+            var response = rSocketRequester.route(route).data(data).retrieveMono(responseClass).block();
+            log.debug("Response: {}", response);
+            return response;
+
+        }).onFailure(e -> log.error("Cannot send data via route {} to peer {} because of: {}", peer, route, e.getMessage()))
+                .getOrNull();
     }
 
     public void pingAll() {

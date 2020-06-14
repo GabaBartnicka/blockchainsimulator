@@ -1,4 +1,4 @@
-package pl.edu.uj.gbartnicka.blockchainsimulator.data;
+package pl.edu.uj.gbartnicka.blockchainsimulator.network;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

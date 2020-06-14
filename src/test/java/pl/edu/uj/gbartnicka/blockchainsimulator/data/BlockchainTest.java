@@ -2,6 +2,8 @@ package pl.edu.uj.gbartnicka.blockchainsimulator.data;
 
 
 import org.junit.jupiter.api.Test;
+import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.Peer;
+import pl.edu.uj.gbartnicka.blockchainsimulator.network.BlockchainEnvelope;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -26,5 +28,11 @@ class BlockchainTest {
                 .map(Block::getHash)
                 .filter(e -> e.substring(0, difficulty).equals(zeroPrefix))
                 .count()).isEqualTo(3);
+
+        Blockchain blockchain2 = new Blockchain();
+        BlockchainEnvelope envelope1 = new BlockchainEnvelope(blockchain, new Peer());
+        BlockchainEnvelope envelope2 = new BlockchainEnvelope(blockchain2, new Peer());
+
+        assertThat(envelope1).isGreaterThan(envelope2);
     }
 }

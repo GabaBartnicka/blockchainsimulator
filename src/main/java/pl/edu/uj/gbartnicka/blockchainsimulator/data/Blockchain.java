@@ -10,6 +10,7 @@ import pl.edu.uj.gbartnicka.blockchainsimulator.utils.Exclude;
 import pl.edu.uj.gbartnicka.blockchainsimulator.utils.Jsonable;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.BlockchainWallet;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +19,9 @@ import static pl.edu.uj.gbartnicka.blockchainsimulator.configuration.DefaultValu
 
 @Slf4j
 @Data
-public class Blockchain implements DisposableBean, Jsonable {
+public class Blockchain implements DisposableBean, Jsonable, Serializable {
+
+    private static final long serialVersionUID = 4975597711628215690L;
 
     private int difficulty;
     private long mineRate = MINE_RATE;
@@ -80,5 +83,24 @@ public class Blockchain implements DisposableBean, Jsonable {
     @Override
     public void destroy() {
         snapshot();
+    }
+
+    public boolean isEmpty() {
+        return chain.size() <= 1;
+    }
+
+    public int getSize() {
+        return chain.size();
+    }
+
+    public void replace(@NotNull Blockchain another) {
+        log.warn("Replacing blockchain!");
+        if (getSize() >= another.getSize()) {
+            throw new IllegalArgumentException("Cannot replace blockchain with smaller one!");
+        }
+
+        this.difficulty = another.difficulty;
+        this.mineRate = another.mineRate;
+        this.chain = another.chain;
     }
 }

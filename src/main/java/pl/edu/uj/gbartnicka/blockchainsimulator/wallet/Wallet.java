@@ -1,5 +1,6 @@
 package pl.edu.uj.gbartnicka.blockchainsimulator.wallet;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.gson.annotations.Expose;
 import io.vavr.control.Try;
 import lombok.Data;
@@ -21,6 +22,7 @@ import static pl.edu.uj.gbartnicka.blockchainsimulator.wallet.keys.Keys.generate
 
 @Data
 @Slf4j
+@JsonIgnoreProperties({"keyPair"})
 public class Wallet implements JsonableExposedOnly, Serializable, DisposableBean {
     private static final long serialVersionUID = 1436085228654294618L;
 

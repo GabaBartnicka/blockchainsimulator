@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.joda.time.DateTime;
+import pl.edu.uj.gbartnicka.blockchainsimulator.utils.Exclude;
 import pl.edu.uj.gbartnicka.blockchainsimulator.utils.JsonableExposedOnly;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.keys.Keys;
 
@@ -89,7 +90,7 @@ public class Transaction implements JsonableExposedOnly {
 
     public boolean isValid() {
         var outputSum = allOutputsAmount();
-        if (!outputSum.equals(input.getAmount())) {
+        if (outputSum.compareTo(input.getAmount()) != 0) {
             log.warn("Invalid transaction from {}. Amounts malformed, i={}, o={}",
                     input.getSenderAddress(), input.getAmount(), outputSum);
             return false;
@@ -117,6 +118,8 @@ public class Transaction implements JsonableExposedOnly {
         final BigDecimal amount;
         @Expose
         final PublicAddress senderAddress;
+
+        @Exclude
         final byte[] signature;
     }
 

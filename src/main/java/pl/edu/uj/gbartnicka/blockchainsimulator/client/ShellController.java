@@ -85,9 +85,9 @@ public class ShellController {
     }
 
     @ShellMethod("synchronize blockchain")
-    public void sync(@ShellOption String peer) {
-        Optional<Peer> p = neighbourhoodService.peer(peer);
-        p.ifPresentOrElse(blockchainService::synchronizeWith, () -> log.warn("Peer {} not found :-(", peer));
+    public void sync() {
+        blockchainService.askForBlockchain();
+        log.info(blockchain.toPrettyJson());
     }
 
     @ShellMethod("prints transaction pool")
