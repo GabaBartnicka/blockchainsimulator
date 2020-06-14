@@ -42,6 +42,7 @@ public class TransactionPool implements DisposableBean, JsonableExposedOnly {
 
     @NotNull
     public List<Transaction> validTransactions() {
+        log.info("Fetching valid transactions");
         return transactions.stream().filter(Transaction::isValid).collect(Collectors.toList());
     }
 

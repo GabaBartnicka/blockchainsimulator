@@ -86,6 +86,7 @@ public class PeerConnector {
 
     @NotNull
     private List<String> sendToAll(@NotNull String data, @NotNull String route) {
+        log.info("Sending message to all peers via {} route", route);
         return connections.keySet().stream().map(peer -> sendToOne(peer, data, route)).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
     }
 

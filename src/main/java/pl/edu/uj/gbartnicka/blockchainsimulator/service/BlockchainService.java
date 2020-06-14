@@ -54,6 +54,7 @@ public class BlockchainService {
     }
 
     public void mine() {
+        log.info("Starting mining process");
         final var validTransactions = transactionPool.validTransactions();
 
         if (validTransactions.isEmpty()) {
@@ -94,6 +95,7 @@ public class BlockchainService {
     }
 
     public void onNewBlock(@NotNull BlockEnvelope blockEnvelope) {
+        log.info("Adding new block #{}", blockEnvelope.getBlock().getIndex());
         blockchain.forceAddNewBlock(blockEnvelope.getBlock());
     }
 

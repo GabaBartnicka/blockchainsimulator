@@ -1,8 +1,9 @@
 package pl.edu.uj.gbartnicka.blockchainsimulator.wallet;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.Gson;
 import com.google.gson.annotations.Expose;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -20,18 +21,30 @@ import static pl.edu.uj.gbartnicka.blockchainsimulator.utils.ShaSum.sha256;
 @Data
 public class Transaction implements JsonableExposedOnly {
     @Expose
-    private final UUID id;
+    private final String id;
     @Expose
     protected Input input;
     @Expose
     protected List<Output> outputs = new ArrayList<>();
 
     protected Transaction(@NotNull UUID id) {
+        this.id = id.toString();
+    }
+
+    @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
+    public Transaction(@JsonProperty("id") String id,
+                       @JsonProperty("input") Input input,
+                       @JsonProperty("outputs") List<Output> outputs) {
+        log.info("id: {}", id);
         this.id = id;
+//        this.id = UUID.fromString(id);
+//        this.id= UUID.randomUUID();
+        this.input = input;
+        this.outputs = outputs;
     }
 
     public Transaction(@NotNull Wallet senderWallet, @NotNull PublicAddress recipientAddress, @NotNull BigDecimal amount) {
-        id = UUID.randomUUID();
+        id = UUID.randomUUID().toString();
         log.info("Created transaction with id: {}", id.toString());
         if (senderWallet.getBalance().compareTo(amount) < 0) {
             log.error("Cannot create transaction");
@@ -110,7 +123,6 @@ public class Transaction implements JsonableExposedOnly {
     }
 
     @Data
-    @AllArgsConstructor
     static class Input {
         @Expose
         final long timestamp;
@@ -121,14 +133,30 @@ public class Transaction implements JsonableExposedOnly {
 
         @Exclude
         final byte[] signature;
+
+        @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
+        public Input(@JsonProperty("timestamp") long timestamp,
+                     @JsonProperty("amount") BigDecimal amount,
+                     @JsonProperty("senderAddress") PublicAddress senderAddress,
+                     @JsonProperty("signature") byte[] signature) {
+            this.timestamp = timestamp;
+            this.amount = amount;
+            this.senderAddress = senderAddress;
+            this.signature = signature;
+        }
     }
 
     @Data
-    @AllArgsConstructor
     static class Output {
         @Expose
         final PublicAddress address;
         @Expose
         BigDecimal deltaAmount;
+
+        public Output(@JsonProperty("address") PublicAddress address,
+                      @JsonProperty("deltaAmount") BigDecimal deltaAmount) {
+            this.address = address;
+            this.deltaAmount = deltaAmount;
+        }
     }
 }

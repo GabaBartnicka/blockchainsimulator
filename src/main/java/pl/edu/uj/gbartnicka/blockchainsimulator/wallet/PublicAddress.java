@@ -1,5 +1,7 @@
 package pl.edu.uj.gbartnicka.blockchainsimulator.wallet;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.annotations.Expose;
 import lombok.AccessLevel;
 import lombok.Data;
@@ -34,6 +36,15 @@ public class PublicAddress implements JsonableExposedOnly, Serializable {
     @Nullable
     @Exclude
     private byte[] encoded;
+
+    @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
+    public PublicAddress(@JsonProperty("name") String name,
+                         @JsonProperty("label") String label,
+                         @JsonProperty("encoded") byte[] encoded) {
+        this.name = name;
+        this.label = label;
+        this.encoded = encoded;
+    }
 
     public PublicAddress(@NotNull PublicKey key) {
         this.name = Hex.toHexString(key.getEncoded());
