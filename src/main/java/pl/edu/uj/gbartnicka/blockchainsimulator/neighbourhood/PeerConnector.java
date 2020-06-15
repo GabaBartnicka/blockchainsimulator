@@ -9,9 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import org.joda.time.DateTime;
 import org.springframework.messaging.rsocket.RSocketRequester;
 import org.springframework.stereotype.Service;
-import pl.edu.uj.gbartnicka.blockchainsimulator.network.BlockchainEnvelope;
-import pl.edu.uj.gbartnicka.blockchainsimulator.network.BlockchainRequest;
-import pl.edu.uj.gbartnicka.blockchainsimulator.network.SimpleMessage;
+import pl.edu.uj.gbartnicka.blockchainsimulator.network.*;
 import reactor.core.publisher.Mono;
 
 import java.util.*;
@@ -80,8 +78,8 @@ public class PeerConnector {
         sendToAll(block, "new-block");
     }
 
-    public void sendNewTransactionToAll(@NotNull String transaction) {
-        sendToAll(transaction, "new-transaction");
+    public void sendNewTransactionToAll(@NotNull TransactionEnvelope transaction) {
+        sendRequestToAll(transaction, "new-transaction", CommonResponse.class);
     }
 
     @NotNull

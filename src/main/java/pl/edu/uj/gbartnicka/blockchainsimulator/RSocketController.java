@@ -10,10 +10,7 @@ import org.springframework.stereotype.Controller;
 import pl.edu.uj.gbartnicka.blockchainsimulator.events.types.NewBlockReceived;
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.NeighbourhoodService;
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.Peer;
-import pl.edu.uj.gbartnicka.blockchainsimulator.network.BlockEnvelope;
-import pl.edu.uj.gbartnicka.blockchainsimulator.network.BlockchainEnvelope;
-import pl.edu.uj.gbartnicka.blockchainsimulator.network.BlockchainRequest;
-import pl.edu.uj.gbartnicka.blockchainsimulator.network.SimpleMessage;
+import pl.edu.uj.gbartnicka.blockchainsimulator.network.*;
 import pl.edu.uj.gbartnicka.blockchainsimulator.service.BlockchainService;
 import pl.edu.uj.gbartnicka.blockchainsimulator.service.TransactionService;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.TransactionPool;
@@ -67,10 +64,10 @@ public class RSocketController {
     }
 
     @MessageMapping("new-transaction")
-    String newTransactionNotification(String transaction) {
+    CommonResponse newTransactionNotification(TransactionEnvelope transaction) {
         log.info("Received notification about new transaction: {}", transaction);
         transactionService.handleIncomingTransaction(transaction);
-        return "ok";
+        return new CommonResponse("ok");
     }
 
     @MessageMapping("clear-pool")

@@ -1,5 +1,6 @@
 package pl.edu.uj.gbartnicka.blockchainsimulator.service;
 
+import io.vavr.control.Try;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -42,15 +43,17 @@ public class BlockchainService {
 
     @PostConstruct
     public void askForBlockchain() {
-        final var blockchainEnvelopes = peerConnector.askForBlockchain();
-        final var longest = blockchainEnvelopes.stream().sorted().limit(1).findFirst();
-        if (longest.isEmpty()) {
-            log.warn("No blockchain found!");
-            return;
-        }
+        Try.run(() -> {
+            final var blockchainEnvelopes = peerConnector.askForBlockchain();
+            final var longest = blockchainEnvelopes.stream().sorted().limit(1).findFirst();
+            if (longest.isEmpty()) {
+                log.warn("No blockchain found!");
+                return;
+            }
 
-        var blockchainCandidate = longest.get();
-        blockchain.replace(blockchainCandidate.getBlockchain());
+            var blockchainCandidate = longest.get();
+            blockchain.replace(blockchainCandidate.getBlockchain());
+        }).onFailure(e -> log.warn("Blockchain remained the same: {}", e.getMessage()));
     }
 
     public void mine() {
@@ -83,15 +86,6 @@ public class BlockchainService {
 
     public BlockchainEnvelope getBlockchain() {
         return new BlockchainEnvelope(blockchain, myself);
-    }
-
-    public void synchronizeWith(@NotNull Peer peer) {
-        final var blockchainEnvelope = peerConnector.askForBlockchain(peer);
-        if (blockchainEnvelope == null)
-            return;
-
-        if (blockchainEnvelope.getBlockchain().getChain().size() > blockchain.getChain().size())
-            blockchain.replaceChains(blockchainEnvelope.getBlockchain().getChain());
     }
 
     public void onNewBlock(@NotNull BlockEnvelope blockEnvelope) {

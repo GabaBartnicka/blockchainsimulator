@@ -1,11 +1,12 @@
 package pl.edu.uj.gbartnicka.blockchainsimulator.service;
 
-import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
+import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.Peer;
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.PeerConnector;
+import pl.edu.uj.gbartnicka.blockchainsimulator.network.TransactionEnvelope;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.PublicAddress;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.Transaction;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.TransactionPool;
@@ -20,19 +21,17 @@ public class TransactionService {
     private final PeerConnector peerConnector;
     private final TransactionPool transactionPool;
     private final Wallet wallet;
+    private final Peer myself;
 
-    public void handleIncomingTransaction(@NotNull String envelope) {
+    public void handleIncomingTransaction(@NotNull TransactionEnvelope envelope) {
         log.info("Received {}", envelope);
 
-        var transaction = new Gson().fromJson(envelope, Transaction.class);
-
-        log.info("Object {}", transaction);
     }
 
     @NotNull
     public Transaction createAndBroadcastTransaction(@NotNull PublicAddress recipient, @NotNull BigDecimal amount) {
         final var transaction = wallet.createTransaction(recipient, amount, transactionPool);
-        peerConnector.sendNewTransactionToAll(transaction.toJson());
+        peerConnector.sendNewTransactionToAll(new TransactionEnvelope(myself, transaction));
         return transaction;
     }
 }
