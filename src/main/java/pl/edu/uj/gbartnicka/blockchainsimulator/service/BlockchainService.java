@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import pl.edu.uj.gbartnicka.blockchainsimulator.data.Block;
 import pl.edu.uj.gbartnicka.blockchainsimulator.data.Blockchain;
 import pl.edu.uj.gbartnicka.blockchainsimulator.data.BlockchainData;
+import pl.edu.uj.gbartnicka.blockchainsimulator.data.BlockchainWithoutChain;
 import pl.edu.uj.gbartnicka.blockchainsimulator.events.types.NewBlockMinedEvent;
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.Peer;
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.PeerConnector;
@@ -19,9 +20,11 @@ import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.TransactionPool;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.Wallet;
 
 import javax.annotation.PostConstruct;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -96,5 +99,15 @@ public class BlockchainService {
     @NotNull
     public BlockchainEnvelope envelope() {
         return new BlockchainEnvelope(blockchain, myself);
+    }
+
+    @NotNull
+    public List<Block> blockchainPage(@NotNull Integer page, @NotNull Integer size) {
+        return blockchain.getChain().stream().skip(page * size).limit(size).collect(Collectors.toList());
+    }
+
+    @NotNull
+    public BlockchainWithoutChain blockchainInfo() {
+        return BlockchainWithoutChain.fromBlockchain(blockchain);
     }
 }
