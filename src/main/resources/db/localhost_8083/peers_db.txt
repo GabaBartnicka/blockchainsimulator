@@ -1,0 +1,1 @@
+{"peers":[{"name":"P7002","port":7002,"host":"localhost"},{"name":"P7001","port":7001,"host":"localhost"},{"name":"P7003","port":7003,"host":"localhost"}]}

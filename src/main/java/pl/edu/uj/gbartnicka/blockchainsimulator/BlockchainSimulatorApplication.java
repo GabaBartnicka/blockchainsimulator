@@ -14,6 +14,7 @@ import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.TransactionPool;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.Wallet;
 
 import java.security.Security;
+import java.util.stream.Stream;
 
 @Slf4j
 @SpringBootApplication
@@ -22,6 +23,7 @@ public class BlockchainSimulatorApplication {
     int port;
 
     public static void main(String[] args) {
+        log.info("Params: {}", Stream.of(args).reduce((s, s2) -> s + ", " + s2).orElse("n/a"));
         Security.addProvider(new BouncyCastleProvider());
         SpringApplication.run(BlockchainSimulatorApplication.class, args);
     }

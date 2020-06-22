@@ -18,6 +18,10 @@ repositories {
     mavenCentral()
 }
 
+bootRun {
+    standardInput = System.in
+}
+
 dependencies {
     compile group: 'io.vavr', name: 'vavr', version: '0.10.2'
     compile group: 'org.bouncycastle', name: 'bcprov-jdk15on', version: '1.65'

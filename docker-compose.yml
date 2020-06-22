@@ -1,0 +1,7 @@
+version: '3'
+
+services:
+  blockchainsimulator:
+    build: 'docker'
+    ports:
+      - '8083:8083'

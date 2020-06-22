@@ -8,6 +8,7 @@ import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 import pl.edu.uj.gbartnicka.blockchainsimulator.data.Blockchain;
+import pl.edu.uj.gbartnicka.blockchainsimulator.hooks.DataGenerator;
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.NeighbourhoodService;
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.Peer;
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.PeerConnector;
@@ -34,6 +35,8 @@ public class ShellController {
     private final Wallet wallet;
     private final TransactionPool transactionPool;
     private final TransactionService transactionService;
+
+    private final DataGenerator dataGenerator;
 
     @ShellMethod("add new peer with given port")
     public void addPeer(@ShellOption Integer port) {
