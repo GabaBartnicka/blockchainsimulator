@@ -9,6 +9,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
+import pl.edu.uj.gbartnicka.blockchainsimulator.data.Blockchain;
+import pl.edu.uj.gbartnicka.blockchainsimulator.hooks.DataGenerator;
+import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.NeighbourhoodService;
+import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.PeerConnector;
 import pl.edu.uj.gbartnicka.blockchainsimulator.service.BlockchainService;
 import pl.edu.uj.gbartnicka.blockchainsimulator.service.TransactionService;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.TransactionPool;
@@ -22,10 +26,21 @@ import java.math.BigDecimal;
 @Slf4j
 public class AppHandler {
 
-    private final Wallet wallet;
+    private final NeighbourhoodService neighbourhoodService;
+    private final PeerConnector peerConnector;
+    private final Blockchain blockchain;
     private final BlockchainService blockchainService;
+
+    private final Wallet wallet;
     private final TransactionPool transactionPool;
     private final TransactionService transactionService;
+
+    private final DataGenerator dataGenerator;
+
+//    private final Wallet wallet;
+//    private final BlockchainService blockchainService;
+//    private final TransactionPool transactionPool;
+//    private final TransactionService transactionService;
 
     @NotNull
     public Mono<ServerResponse> hello(ServerRequest request) {

@@ -1,5 +1,6 @@
 package pl.edu.uj.gbartnicka.blockchainsimulator;
 
+import io.vavr.control.Try;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,7 +44,7 @@ public class BlockchainSimulatorApplication {
 
     @Bean
     Wallet wallet() {
-        return DataLoader.readWallet().orElseGet(Wallet::new);
+        return Try.of(() ->DataLoader.readWallet().orElseGet(Wallet::new)).getOrElse(Wallet::new);
     }
 
     @Bean

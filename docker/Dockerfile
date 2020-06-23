@@ -1,8 +1,10 @@
 FROM amd64/openjdk:14
-COPY ../build/libs/blockchainsimulator-0.0.1.jar /usr/app/
-WORKDIR /usr/app
+
+COPY ./build/libs/*.jar /app.jar
+
+EXPOSE 8080
 EXPOSE 8083
 
-ENV SPRING_PROFILE=dev
+ENV SPRING_PROFILES_ACTIVE=dev
 
-ENTRYPOINT ["java", "-jar", "blockchainsimulator-0.0.1.jar", "-Dspring.profiles.active=dev"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
