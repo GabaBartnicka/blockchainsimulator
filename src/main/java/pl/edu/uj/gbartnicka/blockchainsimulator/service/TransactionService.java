@@ -29,6 +29,9 @@ public class TransactionService {
 
     @NotNull
     public Transaction createAndBroadcastTransaction(@NotNull PublicAddress recipient, @NotNull BigDecimal amount) {
+        if (amount.signum() <1) {
+            throw new IllegalArgumentException("Balance has to be grater than 0");
+        }
         final var transaction = wallet.createTransaction(recipient, amount, transactionPool);
         peerConnector.sendNewTransactionToAll(new TransactionEnvelope(myself, transaction));
         return transaction;

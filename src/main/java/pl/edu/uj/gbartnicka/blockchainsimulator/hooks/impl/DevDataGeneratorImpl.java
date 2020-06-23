@@ -21,7 +21,7 @@ import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
 import java.util.Random;
 
-@Profile("dev")
+@Profile({"dev", "dev1"})
 @RequiredArgsConstructor
 @Slf4j
 @Service
@@ -51,11 +51,7 @@ public class DevDataGeneratorImpl implements DataGenerator {
 
             blockchain.addTestBlock(block);
             transactionPool.clear();
-
-//            blockchainService.mine();
         }
-
-//        createTransaction(fairy, rand);
     }
 
     private void createTransaction(Fairy fairy, Random rand) {
