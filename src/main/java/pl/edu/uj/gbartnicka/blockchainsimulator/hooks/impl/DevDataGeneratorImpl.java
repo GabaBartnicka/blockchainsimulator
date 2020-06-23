@@ -26,7 +26,7 @@ public class DevDataGeneratorImpl implements DataGenerator {
     @PostConstruct
     public void init() {
         log.info("init");
-        if (blockchainService.getBlockchain().getBlockchain().getSize() >= 1) {
+        if (blockchainService.getBlockchain().getBlockchain().getSize() <= 1) {
             log.info("initializing data...");
 
             int n = 3;

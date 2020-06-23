@@ -110,4 +110,9 @@ public class BlockchainService {
     public BlockchainWithoutChain blockchainInfo() {
         return BlockchainWithoutChain.fromBlockchain(blockchain);
     }
+
+    @NotNull
+    public Block blockByIndex(@NotNull Integer index) {
+        return index >= blockchain.getSize()? blockchain.getLastBlock() : blockchain.getChain().get(index);
+    }
 }

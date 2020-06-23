@@ -1,5 +1,6 @@
 package pl.edu.uj.gbartnicka.blockchainsimulator.rest;
 
+import io.vavr.control.Try;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -13,6 +14,7 @@ import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.Wallet;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -39,7 +41,7 @@ public class AppHandler {
     }
 
     @NotNull
-    public Mono<ServerResponse> blocks(ServerRequest request) {
+    public Mono<ServerResponse> blocks(@NotNull ServerRequest request) {
 //        http://localhost:8080/blocks?page=0&size=2
         final var page = request.queryParam("page").map(Integer::valueOf).orElse(0);
         final var size = request.queryParam("size").map(Integer::valueOf).orElse(10);
@@ -53,8 +55,20 @@ public class AppHandler {
     }
 
     @NotNull
+    public Mono<ServerResponse> blockByIndex(@NotNull ServerRequest request) {
+        final var index = Try.of(() ->request.pathVariable("index")).map(Integer::valueOf).getOrElse(0);
+        log.info("Fetching block with index: index={}", index);
+
+        final var block = blockchainService.blockByIndex(index);
+
+        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(BodyInserters.fromValue(block));
+    }
+
+
+    @NotNull
     public Mono<ServerResponse> blockchain(ServerRequest request) {
-        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(BodyInserters.fromValue(blockchainService.blockchainInfo()));
+        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
+                             .body(BodyInserters.fromValue(blockchainService.blockchainInfo()));
     }
 
 }
