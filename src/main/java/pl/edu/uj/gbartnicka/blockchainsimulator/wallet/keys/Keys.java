@@ -23,7 +23,7 @@ public class Keys {
             keyPairGenerator.initialize(new ECGenParameterSpec("secp256k1"), new SecureRandom());
             return keyPairGenerator.generateKeyPair();
         })
-                .onSuccess(b -> log.info("Keys generated successfully"))
+                .onSuccess(b -> log.debug("Keys generated successfully"))
                 .onFailure(e -> log.error("Cannot generate keys: {}", e.getMessage()))
                 .getOrElseThrow(e -> new CannotGenerateKeyException("Generating keys problem" + e.getMessage(), e));
     }
@@ -34,7 +34,7 @@ public class Keys {
             ecdsaVerify.initVerify(pubKey);
             ecdsaVerify.update(plainData.getBytes(StandardCharsets.UTF_8));
             boolean result = ecdsaVerify.verify(signature);
-            log.info("Verification={}", result);
+            log.debug("Verification={}", result);
             return result;
         })
                 .onFailure(e -> log.error("Cannot sign data! {}", e.getMessage()))
@@ -71,7 +71,7 @@ public class Keys {
             PublicKey publicKey2 = ecKeyFac.generatePublic(x509EncodedKeySpec);
             return Optional.of(new KeyPair(publicKey2, privateKey));
         })
-                .onFailure(e -> log.info("Cannot recover keys: {}", e.getMessage()))
+                .onFailure(e -> log.error("Cannot recover keys: {}", e.getMessage()))
                 .getOrElse(Optional::empty);
     }
 }

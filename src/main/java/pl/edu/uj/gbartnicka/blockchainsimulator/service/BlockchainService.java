@@ -20,6 +20,7 @@ import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.TransactionPool;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.Wallet;
 
 import javax.annotation.PostConstruct;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -103,10 +104,10 @@ public class BlockchainService {
 
     @NotNull
     public List<Block> blockchainRange(@NotNull Integer from, @NotNull Integer to) {
-
-        return blockchain.getChain().stream().skip(from).limit(to).collect(Collectors.toList());
-
-//        return blockchain.getChain().stream().skip(page * size).limit(size).collect(Collectors.toList());
+        final List<Block> collect = blockchain.getChain().stream().skip(from).limit(to + 1L - from)
+                                              .collect(Collectors.toList());
+        Collections.reverse(collect);
+        return collect;
     }
 
     @NotNull
@@ -117,6 +118,6 @@ public class BlockchainService {
 
     @NotNull
     public Block blockByIndex(@NotNull Integer index) {
-        return index >= blockchain.getSize()? blockchain.getLastBlock() : blockchain.getChain().get(index);
+        return index >= blockchain.getSize() ? blockchain.getLastBlock() : blockchain.getChain().get(index);
     }
 }

@@ -45,7 +45,7 @@ public class Transaction implements JsonableExposedOnly {
 
     public Transaction(@NotNull Wallet senderWallet, @NotNull PublicAddress recipientAddress, @NotNull BigDecimal amount) {
         id = UUID.randomUUID().toString();
-        log.info("Created transaction with id: {}", id.toString());
+        log.debug("Created transaction with id: {}", id.toString());
         if (senderWallet.getBalance().compareTo(amount) < 0) {
             log.error("Cannot create transaction");
             throw new BalanceExceededException(senderWallet, amount);

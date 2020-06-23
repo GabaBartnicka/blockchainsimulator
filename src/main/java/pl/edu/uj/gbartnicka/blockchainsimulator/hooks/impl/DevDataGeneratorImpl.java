@@ -60,6 +60,6 @@ public class DevDataGeneratorImpl implements DataGenerator {
 
         var t = transactionService
                 .createAndBroadcastTransaction(pubAddress, BigDecimal.valueOf(rand.nextFloat() * 0.01));
-        log.info(t.toPrettyJson());
+        log.debug(t.toPrettyJson());
     }
 }

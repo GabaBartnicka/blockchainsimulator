@@ -23,10 +23,10 @@ public class TransactionPool implements DisposableBean, JsonableExposedOnly {
         var any = transactions.stream().filter(t -> t.getId().equals(transaction.getId())).findAny();
         any.ifPresentOrElse(existingTransaction -> {
                     var replaced = Collections.replaceAll(transactions, existingTransaction, transaction);
-                    log.info("Transaction found {} and replaced {}", existingTransaction.getId().toString(), replaced);
+                    log.debug("Transaction found {} and replaced {}", existingTransaction.getId().toString(), replaced);
                 },
                 () -> {
-                    log.info("Adding new transaction {}", transaction.getId().toString());
+                    log.debug("Adding new transaction {}", transaction.getId().toString());
                     transactions.add(transaction);
                 });
     }
@@ -42,7 +42,7 @@ public class TransactionPool implements DisposableBean, JsonableExposedOnly {
 
     @NotNull
     public List<Transaction> validTransactions() {
-        log.info("Fetching valid transactions");
+        log.debug("Fetching valid transactions");
         return transactions.stream().filter(Transaction::isValid).collect(Collectors.toList());
     }
 

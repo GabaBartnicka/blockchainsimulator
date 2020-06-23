@@ -48,7 +48,7 @@ public class Wallet implements JsonableExposedOnly, Serializable, DisposableBean
             ecdsaSign.update(hashData.getBytes(StandardCharsets.UTF_8));
             return ecdsaSign.sign();
         })
-                .onSuccess(b -> log.info("Data has signed"))
+                .onSuccess(b -> log.debug("Data has signed"))
                 .onFailure(e -> log.error("Cannot sign data! {}", e.getMessage()))
                 .getOrElseThrow(e -> new CannotSignDataException(e.getMessage(), e));
     }
