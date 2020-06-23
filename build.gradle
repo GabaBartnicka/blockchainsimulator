@@ -7,7 +7,8 @@ plugins {
 
 group = 'pl.edu.uj.gbartnicka'
 version = '0.0.1'
-sourceCompatibility = '14'
+sourceCompatibility = 14
+targetCompatibility = 14
 
 configurations {
     compileOnly {
@@ -21,6 +22,17 @@ repositories {
 
 bootRun {
     standardInput = System.in
+}
+
+
+jib {
+    from {
+        image 'amd64/openjdk:14'
+    }
+    to {
+        image = "gaba-blockchain:0.0.1-SNAPSHOT"
+        tags = ['latest']
+    }
 }
 
 dependencies {

@@ -23,6 +23,10 @@ public class BlockchainSimulatorApplication {
     @Value("${spring.rsocket.server.port}")
     int port;
 
+    @Value("${app.hostname}")
+    String hostname;
+
+
     public static void main(String[] args) {
         log.info("Params: {}", Stream.of(args).reduce((s, s2) -> s + ", " + s2).orElse("n/a"));
         Security.addProvider(new BouncyCastleProvider());
@@ -31,7 +35,7 @@ public class BlockchainSimulatorApplication {
 
     @Bean
     Peer myself() {
-        final var peer = new Peer(port);
+        final var peer = new Peer(hostname, port);
         log.info("You are {}", peer);
         SnapshotCreator.loadPeer(peer);
         return peer;

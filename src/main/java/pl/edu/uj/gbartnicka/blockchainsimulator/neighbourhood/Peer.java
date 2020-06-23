@@ -17,10 +17,10 @@ public class Peer implements Jsonable {
     private Integer port;
     private String host;
 
-    public Peer(@NotNull Integer port) {
+    public Peer(@NotNull String hostname, int port) {
+        this.host = hostname;
         this.port = port;
-        this.name = "P" + port;
-        this.host = "localhost";
+        this.name = "[" + hostname + ":" + port + "]";
     }
 
     @Contract("_ -> new")

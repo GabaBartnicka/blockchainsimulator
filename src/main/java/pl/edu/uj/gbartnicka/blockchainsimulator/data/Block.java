@@ -53,7 +53,7 @@ public class Block implements Jsonable, Serializable {
     }
 
     @NotNull
-    private String calculateHash() {
+    String calculateHash() {
         String all = index + prevHash + timestamp + data + nonce + difficulty;
         return sha256(all);
     }
@@ -68,5 +68,11 @@ public class Block implements Jsonable, Serializable {
         } while (!Objects.equals(hash.substring(0, lastBlockDifficulty), zeroStr));
 
         log.info("Block mined! {}", hash);
+    }
+
+    static @NotNull Block genesis(int difficulty) {
+        var block = new Block(0, "Block genesis", difficulty);
+        block.calculateHash();
+        return block;
     }
 }

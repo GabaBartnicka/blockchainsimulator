@@ -32,7 +32,7 @@ public class Blockchain implements DisposableBean, Jsonable, Serializable {
 
     public Blockchain() {
         this.difficulty = INITIAL_DIFFICULTY;
-        chain.add(new Block(0, "Block genesis", difficulty));
+        chain.add(Block.genesis(difficulty));
 
         log.info("Created blockchain with difficulty {} and mine rate {}", difficulty, mineRate);
 
@@ -102,5 +102,11 @@ public class Blockchain implements DisposableBean, Jsonable, Serializable {
         this.difficulty = another.difficulty;
         this.mineRate = another.mineRate;
         this.chain = another.chain;
+    }
+
+    public void addTestBlock(Block block) {
+        block.setPrevHash(getLastBlock().getHash());
+        block.setHash(block.calculateHash());
+        chain.add(block);
     }
 }

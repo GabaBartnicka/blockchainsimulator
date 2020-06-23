@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.Peer;
-import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.PeerConnectorI;
+import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.PeerConnector;
 import pl.edu.uj.gbartnicka.blockchainsimulator.network.TransactionEnvelope;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.PublicAddress;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.Transaction;
@@ -18,7 +18,7 @@ import java.math.BigDecimal;
 @RequiredArgsConstructor
 @Slf4j
 public class TransactionService {
-    private final PeerConnectorI peerConnectorI;
+    private final PeerConnector peerConnector;
     private final TransactionPool transactionPool;
     private final Wallet wallet;
     private final Peer myself;
@@ -30,7 +30,7 @@ public class TransactionService {
     @NotNull
     public Transaction createAndBroadcastTransaction(@NotNull PublicAddress recipient, @NotNull BigDecimal amount) {
         final var transaction = wallet.createTransaction(recipient, amount, transactionPool);
-        peerConnectorI.sendNewTransactionToAll(new TransactionEnvelope(myself, transaction));
+        peerConnector.sendNewTransactionToAll(new TransactionEnvelope(myself, transaction));
         return transaction;
     }
 }

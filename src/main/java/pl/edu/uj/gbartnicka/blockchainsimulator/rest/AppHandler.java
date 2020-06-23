@@ -12,7 +12,7 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import pl.edu.uj.gbartnicka.blockchainsimulator.data.Blockchain;
 import pl.edu.uj.gbartnicka.blockchainsimulator.hooks.DataGenerator;
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.NeighbourhoodService;
-import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.PeerConnectorI;
+import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.PeerConnector;
 import pl.edu.uj.gbartnicka.blockchainsimulator.service.BlockchainService;
 import pl.edu.uj.gbartnicka.blockchainsimulator.service.TransactionService;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.TransactionPool;
@@ -27,7 +27,7 @@ import java.math.BigDecimal;
 public class AppHandler {
 
     private final NeighbourhoodService neighbourhoodService;
-    private final PeerConnectorI peerConnectorI;
+    private final PeerConnector peerConnector;
     private final Blockchain blockchain;
     private final BlockchainService blockchainService;
 

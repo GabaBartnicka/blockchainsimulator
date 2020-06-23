@@ -42,11 +42,7 @@ public class NeighbourhoodService implements DisposableBean {
                 .onFailure(e -> log.error("Cannot collect peers: {}", e.getMessage(), e))
                 .onSuccess(b -> log.info("Peers collected successfully, current peers number: {}", peers.size()));
     }
-
-    public void addPeer(@NotNull Integer port) {
-        addPeer(new Peer(port));
-    }
-
+    
     public void addPeer(@NotNull Peer peer) {
         boolean add = peers.add(peer);
         if (add) {
