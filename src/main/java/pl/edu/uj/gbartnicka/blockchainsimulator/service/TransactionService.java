@@ -25,7 +25,6 @@ public class TransactionService {
 
     public void handleIncomingTransaction(@NotNull TransactionEnvelope envelope) {
         log.info("Received {}", envelope);
-
     }
 
     @NotNull

@@ -10,11 +10,12 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import pl.edu.uj.gbartnicka.blockchainsimulator.service.BlockchainService;
+import pl.edu.uj.gbartnicka.blockchainsimulator.service.TransactionService;
+import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.TransactionPool;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.Wallet;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
-import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -23,6 +24,8 @@ public class AppHandler {
 
     private final Wallet wallet;
     private final BlockchainService blockchainService;
+    private final TransactionPool transactionPool;
+    private final TransactionService transactionService;
 
     @NotNull
     public Mono<ServerResponse> hello(ServerRequest request) {
@@ -42,7 +45,6 @@ public class AppHandler {
 
     @NotNull
     public Mono<ServerResponse> blocks(@NotNull ServerRequest request) {
-//        http://localhost:8080/blocks?page=0&size=2
         final var page = request.queryParam("page").map(Integer::valueOf).orElse(0);
         final var size = request.queryParam("size").map(Integer::valueOf).orElse(10);
         log.info("Fetching blocks: page={}, size={}", page, size);
@@ -56,7 +58,7 @@ public class AppHandler {
 
     @NotNull
     public Mono<ServerResponse> blockByIndex(@NotNull ServerRequest request) {
-        final var index = Try.of(() ->request.pathVariable("index")).map(Integer::valueOf).getOrElse(0);
+        final var index = Try.of(() -> request.pathVariable("index")).map(Integer::valueOf).getOrElse(0);
         log.info("Fetching block with index: index={}", index);
 
         final var block = blockchainService.blockByIndex(index);
@@ -64,11 +66,29 @@ public class AppHandler {
         return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(BodyInserters.fromValue(block));
     }
 
-
     @NotNull
     public Mono<ServerResponse> blockchain(ServerRequest request) {
         return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
                              .body(BodyInserters.fromValue(blockchainService.blockchainInfo()));
     }
+
+    @NotNull
+    public Mono<ServerResponse> transactionPool(ServerRequest request) {
+        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
+                             .body(BodyInserters.fromValue(transactionPool.getTransactions()));
+    }
+
+    @NotNull
+    public Mono<ServerResponse> mine(ServerRequest request) {
+        log.warn("Not implemented yet");
+        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
+                             .body(BodyInserters.fromValue(transactionPool.getTransactions()));
+    }
+
+//    public Mono<ServerResponse> performTransaction(ServerRequest request) {
+//
+//
+//
+//    }
 
 }

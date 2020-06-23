@@ -19,6 +19,8 @@ public class AppRouter {
                 .andRoute(RequestPredicates.GET("/balance").and(RequestPredicates.accept(MediaType.APPLICATION_JSON)), appHandler::balance)
                 .andRoute(RequestPredicates.GET("/blocks").and(RequestPredicates.accept(MediaType.APPLICATION_JSON)), appHandler::blocks)
                 .andRoute(RequestPredicates.GET("/block/{index}").and(RequestPredicates.accept(MediaType.APPLICATION_JSON)), appHandler::blockByIndex)
+                .andRoute(RequestPredicates.GET("/transactions").and(RequestPredicates.accept(MediaType.APPLICATION_JSON)), appHandler::transactionPool)
+                .andRoute(RequestPredicates.POST("/mine").and(RequestPredicates.accept(MediaType.APPLICATION_JSON)), appHandler::transactionPool)
                 .andRoute(RequestPredicates.GET("/blockchain").and(RequestPredicates.accept(MediaType.APPLICATION_JSON)), appHandler::blockchain);
     }
 }

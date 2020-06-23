@@ -3,11 +3,14 @@ package pl.edu.uj.gbartnicka.blockchainsimulator.hooks;
 import io.vavr.control.Try;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.util.ResourceUtils;
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.Peer;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.Wallet;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -38,19 +41,26 @@ public class SnapshotCreator {
         log.info("Saving into the file: {}", filename);
         Path filePath = pathDirectoryPeerBased(filename);
         Try.of(() -> Files.writeString(filePath, json, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE))
-                .onFailure(e -> log.error("Cannot save into the file {} - {}", filePath, e.getMessage(), e))
-                .onSuccess(b -> log.info("Saved into the file {}", filePath));
+           .onFailure(e -> log.error("Cannot save into the file {} - {}", filePath, e.getMessage(), e))
+           .onSuccess(b -> log.info("Saved into the file {}", filePath));
     }
 
     @NotNull
     public static Path pathDirectoryPeerBased(@NotNull String filename) {
         var peerBased = PEER.getHost() + "_" + PEER.getPort();
-        Path filePathDirectory = Paths.get("src", "main", "resources", "db", peerBased);
-        if (!filePathDirectory.toFile().exists()) {
-            final var mkdir = filePathDirectory.toFile().mkdir();
-            log.info("Directory {} created={}", filePathDirectory.toString(), mkdir);
-        }
-        return Paths.get("src", "main", "resources", "db", peerBased, filename);
+
+        return Try.of(() -> {
+            File parent = ResourceUtils.getFile("classpath:.");
+            Path.of(new URI("file://" + parent.getAbsolutePath() + "/db")).toFile().mkdir();
+
+            File dirFile = ResourceUtils.getFile("classpath:db/");
+            final URI uri = new URI("file://" + dirFile.getAbsolutePath() + "/" + peerBased);
+            final Path path = Path.of(uri);
+            path.toFile().mkdirs();
+            final URI fileUri = new URI("file://" + dirFile.getAbsolutePath() + "/" + peerBased + "/" + filename);
+
+            return Path.of(fileUri);
+        }).get();
     }
 
     public static void saveSerializedWallet(@NotNull Wallet wallet) {
@@ -63,7 +73,7 @@ public class SnapshotCreator {
             objectOutputStream.flush();
             objectOutputStream.close();
         })
-                .onFailure(e -> log.error("Cannot save into the file {} - {}", fullPath, e.getMessage(), e))
-                .onSuccess(b -> log.info("Saved into the file {}", fullPath));
+           .onFailure(e -> log.error("Cannot save into the file {} - {}", fullPath, e.getMessage(), e))
+           .onSuccess(b -> log.info("Saved into the file {}", fullPath));
     }
 }
