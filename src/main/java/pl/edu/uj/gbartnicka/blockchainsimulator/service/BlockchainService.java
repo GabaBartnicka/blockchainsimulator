@@ -12,7 +12,7 @@ import pl.edu.uj.gbartnicka.blockchainsimulator.data.BlockchainData;
 import pl.edu.uj.gbartnicka.blockchainsimulator.data.BlockchainWithoutChain;
 import pl.edu.uj.gbartnicka.blockchainsimulator.events.types.NewBlockMinedEvent;
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.Peer;
-import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.PeerConnector;
+import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.PeerConnectorI;
 import pl.edu.uj.gbartnicka.blockchainsimulator.network.BlockEnvelope;
 import pl.edu.uj.gbartnicka.blockchainsimulator.network.BlockchainEnvelope;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.RewardTransaction;
@@ -33,7 +33,7 @@ public class BlockchainService {
     private final Blockchain blockchain;
     private final ApplicationEventPublisher publisher;
     private final Peer myself;
-    private final PeerConnector peerConnector;
+    private final PeerConnectorI peerConnectorI;
     private final TransactionPool transactionPool;
     private final Wallet wallet;
 
@@ -47,7 +47,7 @@ public class BlockchainService {
     @PostConstruct
     public void askForBlockchain() {
         Try.run(() -> {
-            final var blockchainEnvelopes = peerConnector.askForBlockchain();
+            final var blockchainEnvelopes = peerConnectorI.askForBlockchain();
             final var longest = blockchainEnvelopes.stream().sorted().limit(1).findFirst();
             if (longest.isEmpty()) {
                 log.warn("No blockchain found!");

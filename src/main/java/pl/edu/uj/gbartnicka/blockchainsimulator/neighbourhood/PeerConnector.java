@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joda.time.DateTime;
+import org.springframework.context.annotation.Profile;
 import org.springframework.messaging.rsocket.RSocketRequester;
 import org.springframework.stereotype.Service;
 import pl.edu.uj.gbartnicka.blockchainsimulator.network.*;
@@ -18,11 +19,13 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class PeerConnector {
+@Profile("!dev")
+public class PeerConnector implements PeerConnectorI {
     private final RSocketRequester.Builder rsocketRequesterBuilder;
     private final Map<Peer, Mono<RSocketRequester>> connections = new HashMap<>();
     private final Peer myself;
 
+    @Override
     public void establishConnection(Peer peer) {
         log.info("Establishing connection to {}", peer);
 
@@ -35,6 +38,7 @@ public class PeerConnector {
                 .onSuccess(b -> log.info("Connection to peer {} successfully established", peer));
     }
 
+    @Override
     public void ping(Peer peer) {
         log.info("Ping to {}", peer);
         var data = new SimpleMessage("ping", myself);
@@ -50,11 +54,13 @@ public class PeerConnector {
         }).onFailure(e -> log.error("Cannot send ping to peer {} - {}", peer, e.getMessage()));
     }
 
+    @Override
     public List<BlockchainEnvelope> askForBlockchain() {
         final var request = new BlockchainRequest(myself, DateTime.now().getMillis());
         return sendRequestToAll(request, "request-blockchain-sync", BlockchainEnvelope.class);
     }
 
+    @Override
     public BlockchainEnvelope askForBlockchain(@NotNull Peer peer) {
         var data = new SimpleMessage("ping", myself);
         if (!connections.containsKey(peer)) {
@@ -70,14 +76,17 @@ public class PeerConnector {
         }).onFailure(e -> log.error("Cannot send ping to peer {} - {}", peer, e.getMessage())).getOrNull();
     }
 
+    @Override
     public void sendClearPoolToAll() {
         sendToAll("clear pool command", "clear-pool");
     }
 
+    @Override
     public void sendNewBlockInfoToAll(@NotNull String block) {
         sendToAll(block, "new-block");
     }
 
+    @Override
     public void sendNewTransactionToAll(@NotNull TransactionEnvelope transaction) {
         sendRequestToAll(transaction, "new-transaction", CommonResponse.class);
     }
@@ -118,6 +127,7 @@ public class PeerConnector {
                 .getOrNull();
     }
 
+    @Override
     public void pingAll() {
         sendToAll("ping from " + myself.toString(), "ping-pong");
     }

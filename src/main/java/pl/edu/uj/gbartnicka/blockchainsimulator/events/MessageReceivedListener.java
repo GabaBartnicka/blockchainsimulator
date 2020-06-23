@@ -7,7 +7,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import pl.edu.uj.gbartnicka.blockchainsimulator.events.types.NewBlockReceived;
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.Peer;
-import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.PeerConnector;
+import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.PeerConnectorI;
 import pl.edu.uj.gbartnicka.blockchainsimulator.service.BlockchainService;
 
 @Component
@@ -17,7 +17,7 @@ public class MessageReceivedListener {
 
     private final Peer myself;
     private final BlockchainService blockchainService;
-    private final PeerConnector peerConnector;
+    private final PeerConnectorI peerConnectorI;
 
     @EventListener
     public void onNewBlockReceived(@NotNull NewBlockReceived event) {
@@ -30,6 +30,6 @@ public class MessageReceivedListener {
 
         blockchainService.onNewBlock(eventBlock);
 
-        peerConnector.sendNewBlockInfoToAll(eventBlock.toJson());
+        peerConnectorI.sendNewBlockInfoToAll(eventBlock.toJson());
     }
 }

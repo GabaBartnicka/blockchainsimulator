@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import pl.edu.uj.gbartnicka.blockchainsimulator.events.types.NewPeerDetectedEvent;
-import pl.edu.uj.gbartnicka.blockchainsimulator.hooks.DataLoader;
 
 import javax.annotation.PostConstruct;
 import java.util.HashSet;
@@ -32,7 +31,7 @@ public class NeighbourhoodService implements DisposableBean {
 
     @PostConstruct
     public void initialize() {
-        DataLoader.readPeers().map(Peers::getPeers).ifPresent(peers::addAll);
+//        Try.run(()->DataLoader.readPeers().map(Peers::getPeers).ifPresent(peers::addAll));
 
         Try.of(() -> peers.addAll(
                 Stream.of(peersProperty.split(","))

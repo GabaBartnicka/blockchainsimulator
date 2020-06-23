@@ -39,16 +39,16 @@ public class BlockchainSimulatorApplication {
 
     @Bean
     Blockchain blockchain() {
-        return DataLoader.readBlockchain().orElseGet(Blockchain::new);
+        return Try.of(() -> DataLoader.readBlockchain().orElseGet(Blockchain::new)).getOrElse(Blockchain::new);
     }
 
     @Bean
     Wallet wallet() {
-        return Try.of(() ->DataLoader.readWallet().orElseGet(Wallet::new)).getOrElse(Wallet::new);
+        return Try.of(() -> DataLoader.readWallet().orElseGet(Wallet::new)).getOrElse(Wallet::new);
     }
 
     @Bean
     TransactionPool transactionPool() {
-        return DataLoader.readTransactionPool().orElseGet(TransactionPool::new);
+        return Try.of(() -> DataLoader.readTransactionPool().orElseGet(TransactionPool::new)).getOrElse(TransactionPool::new);
     }
 }

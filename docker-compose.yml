@@ -2,6 +2,7 @@ version: '3'
 
 services:
   blockchainsimulator:
-    build: 'docker'
+    image: gaba-blockchain:latest
     ports:
-      - '8083:8083'
+      - 8083:8083
+      - 8080:8080
