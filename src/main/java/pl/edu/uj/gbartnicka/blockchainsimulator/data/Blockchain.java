@@ -107,6 +107,7 @@ public class Blockchain implements DisposableBean, Jsonable, Serializable {
     public void addTestBlock(Block block) {
         block.setPrevHash(getLastBlock().getHash());
         block.setHash(block.calculateHash());
+        block.setIndex(getLastBlock().getIndex()+1);
         chain.add(block);
     }
 }
