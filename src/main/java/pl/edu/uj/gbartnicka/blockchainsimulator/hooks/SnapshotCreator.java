@@ -63,6 +63,17 @@ public class SnapshotCreator {
         }).get();
     }
 
+    @NotNull
+    public static Path pathDirectoryPeerBasedProject(@NotNull String filename) {
+        var peerBased = PEER.getHost() + "_" + PEER.getPort();
+        Path filePathDirectory = Paths.get("src", "main", "resources", "db", peerBased);
+        if (!filePathDirectory.toFile().exists()) {
+            final var mkdir = filePathDirectory.toFile().mkdir();
+            log.info("Directory {} created={}", filePathDirectory.toString(), mkdir);
+        }
+        return Paths.get("src", "main", "resources", "db", peerBased, filename);
+    }
+
     public static void saveSerializedWallet(@NotNull Wallet wallet) {
         var fullPath = pathDirectoryPeerBased(wallet.filename());
 
