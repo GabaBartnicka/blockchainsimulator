@@ -56,11 +56,11 @@ public class AppHandler {
 
     @NotNull
     public Mono<ServerResponse> blocks(@NotNull ServerRequest request) {
-        final var page = request.queryParam("page").map(Integer::valueOf).orElse(0);
-        final var size = request.queryParam("size").map(Integer::valueOf).orElse(10);
-        log.info("Fetching blocks: page={}, size={}", page, size);
+        final var from = request.queryParam("from").map(Integer::valueOf).orElse(0);
+        final var to = request.queryParam("to").map(Integer::valueOf).orElse(10);
+        log.info("Fetching blocks: from={}, to={}", from, to);
 
-        final var blocks = blockchainService.blockchainPage(page, size);
+        final var blocks = blockchainService.blockchainRange(from, to);
 
         log.info("Fetched {} blocks", blocks.size());
 
@@ -96,7 +96,7 @@ public class AppHandler {
                              .body(BodyInserters.fromValue("Mining process has started"));
     }
 
-    public Mono<ServerResponse> performTransaction(@NotNull ServerRequest request) {
+    public @NotNull Mono<ServerResponse> performTransaction(@NotNull ServerRequest request) {
         /**
          * {
          *     "publicAddress": {

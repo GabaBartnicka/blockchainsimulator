@@ -102,8 +102,11 @@ public class BlockchainService {
     }
 
     @NotNull
-    public List<Block> blockchainPage(@NotNull Integer page, @NotNull Integer size) {
-        return blockchain.getChain().stream().skip(page * size).limit(size).collect(Collectors.toList());
+    public List<Block> blockchainRange(@NotNull Integer from, @NotNull Integer to) {
+
+        return blockchain.getChain().stream().skip(from).limit(to).collect(Collectors.toList());
+
+//        return blockchain.getChain().stream().skip(page * size).limit(size).collect(Collectors.toList());
     }
 
     @NotNull
