@@ -15,6 +15,7 @@ import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.Peer;
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.PeerConnector;
 import pl.edu.uj.gbartnicka.blockchainsimulator.network.BlockEnvelope;
 import pl.edu.uj.gbartnicka.blockchainsimulator.network.BlockchainEnvelope;
+import pl.edu.uj.gbartnicka.blockchainsimulator.rest.Pageable;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.RewardTransaction;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.TransactionPool;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.Wallet;
@@ -30,7 +31,7 @@ import java.util.stream.Collectors;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class BlockchainService {
+public class BlockchainService implements Pageable<Block> {
     private final Blockchain blockchain;
     private final ApplicationEventPublisher publisher;
     private final Peer myself;
@@ -103,7 +104,8 @@ public class BlockchainService {
     }
 
     @NotNull
-    public List<Block> blockchainRange(@NotNull Integer from, @NotNull Integer to) {
+    @Override
+    public List<Block> ranged(@NotNull Integer from, @NotNull Integer to) {
         final List<Block> collect = blockchain.getChain().stream().skip(from).limit(to + 1L - from)
                                               .collect(Collectors.toList());
         Collections.reverse(collect);

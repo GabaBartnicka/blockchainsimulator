@@ -5,6 +5,9 @@ import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.keys.Keys;
 
 import java.math.BigDecimal;
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -66,5 +69,18 @@ class TransactionTest {
     void testInvalid() {
         assertThatExceptionOfType(BalanceExceededException.class)
                 .isThrownBy(() -> new Transaction(new Wallet(), new PublicAddress(Keys.generateKeys().getPublic()), BigDecimal.valueOf(100)));
+    }
+
+    @Test
+    void testCompare() {
+        final var senderWallet = new Wallet();
+
+        var t1 = new Transaction(senderWallet, new PublicAddress("name"), BigDecimal.ONE);
+        var t2 = new Transaction(senderWallet, new PublicAddress("name2"), BigDecimal.ONE);
+        var t3 = new Transaction(senderWallet, new PublicAddress("name3"), BigDecimal.ONE);
+
+        final List<Transaction> sorted = Stream.of(t2, t1, t3).sorted().collect(Collectors.toList());
+
+        assertThat(sorted).containsExactly(t1, t2, t3);
     }
 }

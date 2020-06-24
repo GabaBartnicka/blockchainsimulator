@@ -15,7 +15,6 @@ import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.NeighbourhoodServi
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.PeerConnector;
 import pl.edu.uj.gbartnicka.blockchainsimulator.service.BlockchainService;
 import pl.edu.uj.gbartnicka.blockchainsimulator.service.TransactionService;
-import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.Transaction;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.TransactionPool;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.Wallet;
 import reactor.core.publisher.Mono;
@@ -60,7 +59,7 @@ public class AppHandler {
         final var to = request.queryParam("to").map(Integer::valueOf).orElse(blockchain.getSize());
         log.info("Fetching blocks: from={}, to={}", from, to);
 
-        final var blocks = blockchainService.blockchainRange(from, to);
+        final var blocks = blockchainService.ranged(from, to);
 
         log.info("Fetched {} blocks", blocks.size());
 
@@ -84,34 +83,10 @@ public class AppHandler {
     }
 
     @NotNull
-    public Mono<ServerResponse> transactionPool(ServerRequest request) {
-        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
-                             .body(BodyInserters.fromValue(transactionPool.getTransactions()));
-    }
-
-    @NotNull
     public Mono<ServerResponse> mine(ServerRequest request) {
         log.warn("Not implemented yet");
         return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
                              .body(BodyInserters.fromValue("Mining process has started"));
-    }
-
-    public @NotNull Mono<ServerResponse> performTransaction(@NotNull ServerRequest request) {
-        /**
-         * {
-         *     "publicAddress": {
-         *         "name": "asd",
-         *         "label": "as"
-         *     },
-         *     "amount": -1
-         * }
-         */
-
-        final Mono<Transaction> monoMap =
-                request.bodyToMono(TransactionRequest.class)
-                       .map(t -> transactionService.createAndBroadcastTransaction(t.getPublicAddress(), t.getAmount()));
-
-        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(monoMap, Transaction.class);
     }
 
 }

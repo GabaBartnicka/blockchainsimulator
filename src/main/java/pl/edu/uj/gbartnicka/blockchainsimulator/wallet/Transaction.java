@@ -19,13 +19,15 @@ import static pl.edu.uj.gbartnicka.blockchainsimulator.utils.ShaSum.sha256;
 
 @Slf4j
 @Data
-public class Transaction implements JsonableExposedOnly {
+public class Transaction implements JsonableExposedOnly, Comparable<Transaction> {
     @Expose
     private final String id;
     @Expose
     protected Input input;
     @Expose
     protected List<Output> outputs = new ArrayList<>();
+    @Expose
+    protected Boolean valid;
 
     protected Transaction(@NotNull UUID id) {
         this.id = id.toString();
@@ -34,18 +36,20 @@ public class Transaction implements JsonableExposedOnly {
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
     public Transaction(@JsonProperty("id") String id,
                        @JsonProperty("input") Input input,
-                       @JsonProperty("outputs") List<Output> outputs) {
+                       @JsonProperty("outputs") List<Output> outputs,
+                       @JsonProperty("valid") Boolean valid) {
         log.info("id: {}", id);
         this.id = id;
 //        this.id = UUID.fromString(id);
 //        this.id= UUID.randomUUID();
         this.input = input;
         this.outputs = outputs;
+        this.valid = valid;
     }
 
     public Transaction(@NotNull Wallet senderWallet, @NotNull PublicAddress recipientAddress, @NotNull BigDecimal amount) {
         id = UUID.randomUUID().toString();
-        log.debug("Created transaction with id: {}", id.toString());
+        log.debug("Created transaction with id: {}", id);
         if (senderWallet.getBalance().compareTo(amount) < 0) {
             log.error("Cannot create transaction");
             throw new BalanceExceededException(senderWallet, amount);
@@ -55,6 +59,7 @@ public class Transaction implements JsonableExposedOnly {
         final var senderInfo = new Output(senderWallet.getPublicAddress(), postBalance);
         final var recipientInfo = new Output(recipientAddress, amount);
         addOutputsAndSign(senderWallet, senderInfo, recipientInfo);
+        this.valid = isValid();
     }
 
     protected void addOutputsAndSign(@NotNull Wallet senderWallet, @NotNull Output... outputs) {
@@ -83,7 +88,7 @@ public class Transaction implements JsonableExposedOnly {
     public void update(@NotNull Wallet senderWallet, @NotNull PublicAddress recipientAddress, @NotNull BigDecimal amount) {
         var senderAddress = senderWallet.getPublicAddress();
         final var recipientOpt = findSenderRelatedOutput(senderAddress);
-        log.info("Updating transaction {} for sender {}", getId().toString(), senderWallet.getPublicAddress());
+        log.debug("Updating transaction {} for sender {}", getId(), senderWallet.getPublicAddress());
         if (recipientOpt.isEmpty()) {
             log.warn("Cannot update transaction for sender {}", senderWallet.getPublicAddress());
             return;
@@ -91,14 +96,15 @@ public class Transaction implements JsonableExposedOnly {
         var senderOutput = recipientOpt.get();
         var oldAmount = senderOutput.getDeltaAmount();
 
-        if (amount.compareTo(oldAmount) > 0) {
-            log.error("Amount {} exceed balance which is {}", amount.toPlainString(), oldAmount.toPlainString());
-            throw new BalanceExceededException(senderWallet, amount);
-        }
+//        if (amount.compareTo(oldAmount) > 0) {
+//            log.error("Amount {} exceed balance which is {}", amount.toPlainString(), oldAmount.toPlainString());
+//            throw new BalanceExceededException(senderWallet, amount);
+//        }
 
         senderOutput.deltaAmount = senderOutput.deltaAmount.subtract(amount);
         addOutput(new Output(recipientAddress, amount));
         attachSignature(senderWallet);
+        this.valid = isValid();
     }
 
     public boolean isValid() {
@@ -120,6 +126,15 @@ public class Transaction implements JsonableExposedOnly {
     @NotNull
     private Optional<Output> findSenderRelatedOutput(@NotNull PublicAddress senderAddress) {
         return outputs.stream().filter(o -> o.getAddress().equals(senderAddress)).findAny();
+    }
+
+    @Override
+    public int compareTo(@NotNull Transaction o) {
+        return (int) (timestamp() - o.timestamp());
+    }
+
+    public long timestamp() {
+        return input.timestamp;
     }
 
     @Data

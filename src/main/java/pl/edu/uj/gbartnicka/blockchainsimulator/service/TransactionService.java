@@ -7,17 +7,21 @@ import org.springframework.stereotype.Component;
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.Peer;
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.PeerConnector;
 import pl.edu.uj.gbartnicka.blockchainsimulator.network.TransactionEnvelope;
+import pl.edu.uj.gbartnicka.blockchainsimulator.rest.Pageable;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.PublicAddress;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.Transaction;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.TransactionPool;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.Wallet;
 
 import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class TransactionService {
+public class TransactionService implements Pageable<Transaction> {
     private final PeerConnector peerConnector;
     private final TransactionPool transactionPool;
     private final Wallet wallet;
@@ -29,11 +33,23 @@ public class TransactionService {
 
     @NotNull
     public Transaction createAndBroadcastTransaction(@NotNull PublicAddress recipient, @NotNull BigDecimal amount) {
-        if (amount.signum() <1) {
+        if (amount.signum() < 1) {
             throw new IllegalArgumentException("Balance has to be grater than 0");
         }
         final var transaction = wallet.createTransaction(recipient, amount, transactionPool);
         peerConnector.sendNewTransactionToAll(new TransactionEnvelope(myself, transaction));
         return transaction;
+    }
+
+    @Override
+    public List<Transaction> ranged(@NotNull Integer from, @NotNull Integer to) {
+        var collect = transactionPool.getTransactions().stream().sorted().skip(from).limit(to + 1L - from)
+                                              .collect(Collectors.toList());
+        Collections.reverse(collect);
+        return collect;
+    }
+
+    public int numberOfTransactions() {
+        return transactionPool.getTransactions().size();
     }
 }

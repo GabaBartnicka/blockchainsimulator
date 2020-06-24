@@ -34,7 +34,7 @@ public class DevDataGeneratorImpl implements DataGenerator {
 
     @PostConstruct
     public void init() {
-        log.info("Dev profile, generating test data");
+        log.info("Dev profile, generating test data.....");
 
         Fairy fairy = Fairy.create();
         Random rand = new Random();
