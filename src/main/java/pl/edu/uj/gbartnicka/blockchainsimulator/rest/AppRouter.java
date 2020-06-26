@@ -12,7 +12,7 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 @Configuration
 public class AppRouter {
     @Bean
-    public RouterFunction<ServerResponse> route(@NotNull AppHandler appHandler, @NotNull TransactionsHandler transactionsHandler) {
+    public RouterFunction<ServerResponse> route(@NotNull AppHandler appHandler, @NotNull TransactionsHandler transactionsHandler, @NotNull PeersHandler peersHandler) {
         // @formatter:off
         return RouterFunctions
                 .route(RequestPredicates.GET("/hello").and(RequestPredicates.accept(MediaType.TEXT_PLAIN)), appHandler::hello)
@@ -23,6 +23,8 @@ public class AppRouter {
                 .andRoute(RequestPredicates.POST("/transaction").and(RequestPredicates.accept(MediaType.APPLICATION_JSON)), transactionsHandler::performTransaction)
                 .andRoute(RequestPredicates.POST("/mine").and(RequestPredicates.accept(MediaType.APPLICATION_JSON)), appHandler::mine)
                 .andRoute(RequestPredicates.GET("/transactions").and(RequestPredicates.accept(MediaType.APPLICATION_JSON)), transactionsHandler::transactionPool)
+                .andRoute(RequestPredicates.GET("/peers").and(RequestPredicates.accept(MediaType.APPLICATION_JSON)), peersHandler::all)
+                .andRoute(RequestPredicates.GET("/peer/{name}").and(RequestPredicates.accept(MediaType.APPLICATION_JSON)), peersHandler::byName)
                 .andRoute(RequestPredicates.GET("/blockchain").and(RequestPredicates.accept(MediaType.APPLICATION_JSON)), appHandler::blockchain);
         // @formatter:on
     }

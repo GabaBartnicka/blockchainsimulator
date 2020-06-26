@@ -67,4 +67,8 @@ public class NeighbourhoodService implements DisposableBean {
     public void destroy() {
         new Peers(peers).snapshot();
     }
+
+    public Optional<Peer> findByName(@NotNull String name) {
+        return peers.stream().filter(p -> p.getName().equals(name)).findFirst();
+    }
 }

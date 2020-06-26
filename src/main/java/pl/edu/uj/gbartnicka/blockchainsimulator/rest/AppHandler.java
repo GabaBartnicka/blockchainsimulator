@@ -11,7 +11,6 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import pl.edu.uj.gbartnicka.blockchainsimulator.data.Blockchain;
 import pl.edu.uj.gbartnicka.blockchainsimulator.hooks.DataGenerator;
-import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.NeighbourhoodService;
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.PeerConnector;
 import pl.edu.uj.gbartnicka.blockchainsimulator.service.BlockchainService;
 import pl.edu.uj.gbartnicka.blockchainsimulator.service.TransactionService;
@@ -26,7 +25,6 @@ import java.math.BigDecimal;
 @Slf4j
 public class AppHandler {
 
-    private final NeighbourhoodService neighbourhoodService;
     private final PeerConnector peerConnector;
     private final Blockchain blockchain;
     private final BlockchainService blockchainService;
@@ -55,7 +53,7 @@ public class AppHandler {
 
     @NotNull
     public Mono<ServerResponse> blocks(@NotNull ServerRequest request) {
-        final var from = request.queryParam("from").map(Integer::valueOf).orElse(blockchain.getSize() - 10);
+        final var from = request.queryParam("from").map(Integer::valueOf).orElse(Math.max(0, blockchain.getSize() - 10));
         final var to = request.queryParam("to").map(Integer::valueOf).orElse(blockchain.getSize());
         log.info("Fetching blocks: from={}, to={}", from, to);
 

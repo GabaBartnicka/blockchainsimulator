@@ -77,7 +77,7 @@ public class Blockchain implements DisposableBean, Jsonable, Serializable {
 
     @Contract(pure = true)
     private @NotNull Integer adjustDifficulty(long lastBlockTimestamp, long currentTime, Integer difficulty) {
-        return lastBlockTimestamp + mineRate > currentTime ? difficulty + 1 : difficulty - 1;
+        return Math.max(1, lastBlockTimestamp + mineRate > currentTime ? difficulty + 1 : difficulty - 1);
     }
 
     @Override
