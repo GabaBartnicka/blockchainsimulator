@@ -42,7 +42,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-rsocket'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
-//    compile group: 'org.springframework.shell', name: 'spring-shell-starter', version: '2.0.1.RELEASE'
+    compile group: 'org.springframework.shell', name: 'spring-shell-starter', version: '2.0.1.RELEASE'
 
     compile group: 'org.jetbrains', name: 'annotations', version: '19.0.0'
     compile group: 'joda-time', name: 'joda-time', version: '2.10.6'
@@ -59,10 +59,10 @@ dependencies {
     testCompile group: 'org.assertj', name: 'assertj-core', version: '3.16.1'
 }
 
-//test {
-//    useJUnitPlatform()
-//    testLogging {
-//        exceptionFormat = 'full'
-//        showStandardStreams = true
-//    }
-//}
+test {
+    useJUnitPlatform()
+    testLogging {
+        exceptionFormat = 'full'
+        showStandardStreams = true
+    }
+}
