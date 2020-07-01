@@ -4,6 +4,7 @@ import com.devskiller.jfairy.Fairy;
 import com.devskiller.jfairy.producer.person.Person;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import pl.edu.uj.gbartnicka.blockchainsimulator.data.Block;
@@ -54,7 +55,7 @@ public class DevDataGeneratorImpl implements DataGenerator {
         }
     }
 
-    private void createTransaction(Fairy fairy, Random rand) {
+    private void createTransaction(@NotNull Fairy fairy, @NotNull Random rand) {
         Person person = fairy.person();
         var pubAddress = new PublicAddress(person.getFullName());
 

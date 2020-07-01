@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import pl.edu.uj.gbartnicka.blockchainsimulator.hooks.DataGenerator;
 
-@Profile("!dev")
+@Profile("default")
 @RequiredArgsConstructor
 @Slf4j
 @Service

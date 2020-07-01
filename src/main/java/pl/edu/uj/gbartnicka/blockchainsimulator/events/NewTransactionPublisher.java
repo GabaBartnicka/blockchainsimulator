@@ -36,6 +36,6 @@ public class NewTransactionPublisher implements ApplicationListener<NewTransacti
     @Override
     public void onApplicationEvent(@NotNull NewTransactionEvent event) {
         final boolean added = queue.offer(event);
-        log.info("event added={}", added);
+        log.debug("event added={}", added);
     }
 }
