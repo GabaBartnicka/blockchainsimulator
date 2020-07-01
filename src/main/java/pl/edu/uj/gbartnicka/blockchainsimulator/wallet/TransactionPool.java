@@ -49,4 +49,8 @@ public class TransactionPool implements DisposableBean, JsonableExposedOnly {
     public void clear() {
         transactions.clear();
     }
+
+    public void clear(@NotNull List<Transaction> transactionsToRemove) {
+        transactions.removeAll(transactionsToRemove);
+    }
 }

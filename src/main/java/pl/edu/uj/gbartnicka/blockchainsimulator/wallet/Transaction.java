@@ -96,10 +96,10 @@ public class Transaction implements JsonableExposedOnly, Comparable<Transaction>
         var senderOutput = recipientOpt.get();
         var oldAmount = senderOutput.getDeltaAmount();
 
-//        if (amount.compareTo(oldAmount) > 0) {
-//            log.error("Amount {} exceed balance which is {}", amount.toPlainString(), oldAmount.toPlainString());
-//            throw new BalanceExceededException(senderWallet, amount);
-//        }
+        if (amount.compareTo(oldAmount) > 0) {
+            log.error("Amount {} exceed balance which is {}", amount.toPlainString(), oldAmount.toPlainString());
+            throw new BalanceExceededException(senderWallet, amount);
+        }
 
         senderOutput.deltaAmount = senderOutput.deltaAmount.subtract(amount);
         addOutput(new Output(recipientAddress, amount));

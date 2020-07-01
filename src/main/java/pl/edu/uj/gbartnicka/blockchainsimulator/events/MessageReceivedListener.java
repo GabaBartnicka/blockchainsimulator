@@ -21,12 +21,13 @@ public class MessageReceivedListener {
 
     @EventListener
     public void onNewBlockReceived(@NotNull NewBlockReceived event) {
-        final var eventBlock = event.getBlock();
+        final var eventBlock = event.getBlockEnvelope();
         if (eventBlock.getSender().equals(myself)) {
             log.warn("Skipping message");
         }
 
-        log.info("Received new block with index {} from peer {}", eventBlock.getBlock().getIndex(), event.getBlock().getSender().getName());
+        log.info("Received new block with index {} from peer {}", eventBlock.getBlock().getIndex(), eventBlock
+                .getSender().getName());
 
         blockchainService.onNewBlock(eventBlock);
 

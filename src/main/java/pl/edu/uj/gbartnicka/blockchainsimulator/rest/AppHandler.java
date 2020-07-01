@@ -53,7 +53,8 @@ public class AppHandler {
 
     @NotNull
     public Mono<ServerResponse> blocks(@NotNull ServerRequest request) {
-        final var from = request.queryParam("from").map(Integer::valueOf).orElse(Math.max(0, blockchain.getSize() - 10));
+        final var from = request.queryParam("from").map(Integer::valueOf)
+                                .orElse(Math.max(0, blockchain.getSize() - 10));
         final var to = request.queryParam("to").map(Integer::valueOf).orElse(blockchain.getSize());
         log.info("Fetching blocks: from={}, to={}", from, to);
 

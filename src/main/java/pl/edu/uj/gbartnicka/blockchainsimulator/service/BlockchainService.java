@@ -81,11 +81,11 @@ public class BlockchainService implements Pageable<Block> {
         }
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(() -> {
-            log.info("Started mining process");
+            log.info("Started mining process with {} transactions", validTransactions.size());
             final var newBlock = blockchain.mine(block);
             free.set(true);
             publisher.publishEvent(new NewBlockMinedEvent(new BlockEnvelope(newBlock, myself), this));
-            transactionPool.clear();
+            transactionPool.clear(validTransactions);
         });
     }
 
