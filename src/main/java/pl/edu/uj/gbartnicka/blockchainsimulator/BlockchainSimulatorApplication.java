@@ -14,7 +14,9 @@ import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.Peer;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.TransactionPool;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.Wallet;
 
+import java.math.BigDecimal;
 import java.security.Security;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -26,6 +28,14 @@ public class BlockchainSimulatorApplication {
     @Value("${app.hostname}")
     String hostname;
 
+    @Value("${blockchain.initialDifficulty}")
+    Integer initialDifficulty;
+
+    @Value("${blockchain.mineRate}")
+    Long mineRate;
+
+    @Value("${blockchain.initialBalance}")
+    BigDecimal initialBalance;
 
     public static void main(String[] args) {
         log.info("Params: {}", Stream.of(args).reduce((s, s2) -> s + ", " + s2).orElse("n/a"));
@@ -43,16 +53,19 @@ public class BlockchainSimulatorApplication {
 
     @Bean
     Blockchain blockchain() {
-        return Try.of(() -> DataLoader.readBlockchain().orElseGet(Blockchain::new)).getOrElse(Blockchain::new);
+        final Supplier<Blockchain> orElseSuppler = () -> new Blockchain(initialDifficulty, mineRate);
+        return Try.of(() -> DataLoader.readBlockchain().orElseGet(orElseSuppler)).getOrElse(orElseSuppler);
     }
 
     @Bean
     Wallet wallet() {
-        return Try.of(() -> DataLoader.readWallet().orElseGet(Wallet::new)).getOrElse(Wallet::new);
+        final Supplier<Wallet> orElseSuppler = () -> new Wallet(initialBalance);
+        return Try.of(() -> DataLoader.readWallet().orElseGet(orElseSuppler)).getOrElse(orElseSuppler);
     }
 
     @Bean
     TransactionPool transactionPool() {
-        return Try.of(() -> DataLoader.readTransactionPool().orElseGet(TransactionPool::new)).getOrElse(TransactionPool::new);
+        return Try.of(() -> DataLoader.readTransactionPool().orElseGet(TransactionPool::new))
+                  .getOrElse(TransactionPool::new);
     }
 }

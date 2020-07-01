@@ -1,4 +1,4 @@
-package pl.edu.uj.gbartnicka.blockchainsimulator.events.types;
+package pl.edu.uj.gbartnicka.blockchainsimulator.events.blocks;
 
 import lombok.Getter;
 import pl.edu.uj.gbartnicka.blockchainsimulator.network.BlockEnvelope;

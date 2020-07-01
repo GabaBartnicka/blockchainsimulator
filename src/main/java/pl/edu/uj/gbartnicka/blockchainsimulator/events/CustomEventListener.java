@@ -5,9 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
-import pl.edu.uj.gbartnicka.blockchainsimulator.events.types.ClearTransactionPoolEvent;
-import pl.edu.uj.gbartnicka.blockchainsimulator.events.types.NewBlockMinedEvent;
-import pl.edu.uj.gbartnicka.blockchainsimulator.events.types.NewPeerDetectedEvent;
+import pl.edu.uj.gbartnicka.blockchainsimulator.events.blocks.NewBlockMinedEvent;
+import pl.edu.uj.gbartnicka.blockchainsimulator.events.peers.NewPeerDetectedEvent;
+import pl.edu.uj.gbartnicka.blockchainsimulator.events.transactions.ClearTransactionPoolEvent;
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.PeerConnector;
 
 @Component

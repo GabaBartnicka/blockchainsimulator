@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.TestOnly;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.util.CollectionUtils;
 import pl.edu.uj.gbartnicka.blockchainsimulator.utils.Exclude;
@@ -24,14 +25,20 @@ public class Blockchain implements DisposableBean, Jsonable, Serializable {
     private static final long serialVersionUID = 4975597711628215690L;
 
     private int difficulty;
-    private long mineRate = MINE_RATE;
+    private long mineRate;
     private List<Block> chain = new ArrayList<>();
 
     @Exclude
     private BlockchainWallet wallet;
 
+    @TestOnly
     public Blockchain() {
-        this.difficulty = INITIAL_DIFFICULTY;
+        this(INITIAL_DIFFICULTY, MINE_RATE);
+    }
+
+    public Blockchain(@NotNull Integer difficulty, @NotNull Long mineRate) {
+        this.difficulty = difficulty;
+        this.mineRate = mineRate;
         chain.add(Block.genesis(difficulty));
 
         log.info("Created blockchain with difficulty {} and mine rate {}", difficulty, mineRate);

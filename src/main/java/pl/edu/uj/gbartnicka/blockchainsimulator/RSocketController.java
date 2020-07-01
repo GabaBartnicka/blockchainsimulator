@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
-import pl.edu.uj.gbartnicka.blockchainsimulator.events.types.NewBlockReceived;
+import pl.edu.uj.gbartnicka.blockchainsimulator.events.blocks.NewBlockReceived;
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.NeighbourhoodService;
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.Peer;
 import pl.edu.uj.gbartnicka.blockchainsimulator.network.*;

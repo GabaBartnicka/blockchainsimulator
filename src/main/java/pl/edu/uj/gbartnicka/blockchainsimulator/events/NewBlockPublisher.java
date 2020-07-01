@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
-import pl.edu.uj.gbartnicka.blockchainsimulator.events.types.NewBlockEvent;
+import pl.edu.uj.gbartnicka.blockchainsimulator.events.blocks.NewBlockEvent;
 import reactor.core.publisher.FluxSink;
 
 import java.util.concurrent.BlockingQueue;

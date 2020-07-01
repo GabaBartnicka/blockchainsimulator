@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pl.edu.uj.gbartnicka.blockchainsimulator.events.NewBlockPublisher;
-import pl.edu.uj.gbartnicka.blockchainsimulator.events.types.NewBlockEvent;
+import pl.edu.uj.gbartnicka.blockchainsimulator.events.blocks.NewBlockEvent;
 import reactor.core.publisher.Flux;
 
 @RestController

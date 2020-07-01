@@ -38,7 +38,7 @@ public class SnapshotCreator {
     }
 
     public static void save(@NotNull String json, @NotNull String filename) {
-        log.info("Saving into the file: {}", filename);
+        log.debug("Saving into the file: {}", filename);
         Path filePath = pathDirectoryPeerBased(filename);
         Try.of(() -> Files.writeString(filePath, json, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE))
            .onFailure(e -> log.error("Cannot save into the file {} - {}", filePath, e.getMessage(), e))

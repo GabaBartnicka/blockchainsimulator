@@ -1,4 +1,4 @@
-package pl.edu.uj.gbartnicka.blockchainsimulator.events.types;
+package pl.edu.uj.gbartnicka.blockchainsimulator.events.peers;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;

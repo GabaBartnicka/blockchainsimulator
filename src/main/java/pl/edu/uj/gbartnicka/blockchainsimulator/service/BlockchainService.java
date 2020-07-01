@@ -10,7 +10,7 @@ import pl.edu.uj.gbartnicka.blockchainsimulator.data.Block;
 import pl.edu.uj.gbartnicka.blockchainsimulator.data.Blockchain;
 import pl.edu.uj.gbartnicka.blockchainsimulator.data.BlockchainData;
 import pl.edu.uj.gbartnicka.blockchainsimulator.data.BlockchainWithoutChain;
-import pl.edu.uj.gbartnicka.blockchainsimulator.events.types.NewBlockMinedEvent;
+import pl.edu.uj.gbartnicka.blockchainsimulator.events.blocks.NewBlockMinedEvent;
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.Peer;
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.PeerConnector;
 import pl.edu.uj.gbartnicka.blockchainsimulator.network.BlockEnvelope;

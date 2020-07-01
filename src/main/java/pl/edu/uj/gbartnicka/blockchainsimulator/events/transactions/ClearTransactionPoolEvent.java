@@ -1,4 +1,4 @@
-package pl.edu.uj.gbartnicka.blockchainsimulator.events.types;
+package pl.edu.uj.gbartnicka.blockchainsimulator.events.transactions;
 
 import org.springframework.context.ApplicationEvent;
 

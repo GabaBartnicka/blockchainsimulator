@@ -6,6 +6,7 @@ import io.vavr.control.Try;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.TestOnly;
 import org.springframework.beans.factory.DisposableBean;
 import pl.edu.uj.gbartnicka.blockchainsimulator.hooks.SnapshotCreator;
 import pl.edu.uj.gbartnicka.blockchainsimulator.utils.JsonableExposedOnly;
@@ -32,12 +33,18 @@ public class Wallet implements JsonableExposedOnly, Serializable, DisposableBean
     @Expose
     protected final PublicAddress publicAddress;
     @Expose
-    private BigDecimal balance = INITIAL_BALANCE;
+    private BigDecimal balance;
 
+    @TestOnly
     public Wallet() {
+        this(INITIAL_BALANCE);
+    }
+
+    public Wallet(@NotNull BigDecimal initialBalance) {
         this.keyPair = generateKeys();
         this.publicAddress = new PublicAddress(keyPair.getPublic());
         this.encodedPriv = keyPair.getPrivate().getEncoded();
+        this.balance = initialBalance;
     }
 
     @NotNull
