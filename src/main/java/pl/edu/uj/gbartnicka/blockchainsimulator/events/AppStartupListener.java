@@ -11,8 +11,8 @@ import pl.edu.uj.gbartnicka.blockchainsimulator.hooks.DataGenerator;
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.NeighbourhoodService;
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.PeerConnector;
 import pl.edu.uj.gbartnicka.blockchainsimulator.service.BlockchainService;
-import pl.edu.uj.gbartnicka.blockchainsimulator.service.TransactionService;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.TransactionPool;
+import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.TransactionService;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.Wallet;
 
 

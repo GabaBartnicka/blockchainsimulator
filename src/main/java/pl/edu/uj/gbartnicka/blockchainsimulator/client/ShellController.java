@@ -14,9 +14,9 @@ import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.NeighbourhoodServi
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.Peer;
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.PeerConnector;
 import pl.edu.uj.gbartnicka.blockchainsimulator.service.BlockchainService;
-import pl.edu.uj.gbartnicka.blockchainsimulator.service.TransactionService;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.PublicAddress;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.TransactionPool;
+import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.TransactionService;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.Wallet;
 
 import java.math.BigDecimal;

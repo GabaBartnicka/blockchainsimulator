@@ -12,8 +12,8 @@ import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.NeighbourhoodServi
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.Peer;
 import pl.edu.uj.gbartnicka.blockchainsimulator.network.*;
 import pl.edu.uj.gbartnicka.blockchainsimulator.service.BlockchainService;
-import pl.edu.uj.gbartnicka.blockchainsimulator.service.TransactionService;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.TransactionPool;
+import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.TransactionService;
 
 @Slf4j
 @Controller

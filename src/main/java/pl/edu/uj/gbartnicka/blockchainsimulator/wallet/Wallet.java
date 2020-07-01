@@ -61,7 +61,7 @@ public class Wallet implements JsonableExposedOnly, Serializable, DisposableBean
     }
 
     @NotNull
-    public Transaction createTransaction(@NotNull PublicAddress recipient, @NotNull BigDecimal amount, @NotNull TransactionPool pool) {
+    Transaction createTransaction(@NotNull PublicAddress recipient, @NotNull BigDecimal amount, @NotNull TransactionPool pool) {
         if (amount.compareTo(balance) > 0) {
             throw new BalanceExceededException(this, amount);
         }

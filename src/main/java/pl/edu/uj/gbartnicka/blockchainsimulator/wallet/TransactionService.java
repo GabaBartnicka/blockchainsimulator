@@ -1,17 +1,15 @@
-package pl.edu.uj.gbartnicka.blockchainsimulator.service;
+package pl.edu.uj.gbartnicka.blockchainsimulator.wallet;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
+import pl.edu.uj.gbartnicka.blockchainsimulator.events.transactions.NewTransactionCreatedEvent;
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.Peer;
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.PeerConnector;
 import pl.edu.uj.gbartnicka.blockchainsimulator.network.TransactionEnvelope;
 import pl.edu.uj.gbartnicka.blockchainsimulator.rest.Pageable;
-import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.PublicAddress;
-import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.Transaction;
-import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.TransactionPool;
-import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.Wallet;
 
 import java.math.BigDecimal;
 import java.util.Collections;
@@ -26,6 +24,7 @@ public class TransactionService implements Pageable<Transaction> {
     private final TransactionPool transactionPool;
     private final Wallet wallet;
     private final Peer myself;
+    private final ApplicationEventPublisher publisher;
 
     public void handleIncomingTransaction(@NotNull TransactionEnvelope envelope) {
         log.info("Received {}", envelope);
@@ -37,6 +36,7 @@ public class TransactionService implements Pageable<Transaction> {
             throw new IllegalArgumentException("Balance has to be grater than 0");
         }
         final var transaction = wallet.createTransaction(recipient, amount, transactionPool);
+        publisher.publishEvent(new NewTransactionCreatedEvent(this, new TransactionEnvelope(myself, transaction)));
         peerConnector.sendNewTransactionToAll(new TransactionEnvelope(myself, transaction));
         return transaction;
     }

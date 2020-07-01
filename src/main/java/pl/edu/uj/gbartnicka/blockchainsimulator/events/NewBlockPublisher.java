@@ -27,10 +27,8 @@ public class NewBlockPublisher implements ApplicationListener<NewBlockEvent>, Co
     public void accept(FluxSink<NewBlockEvent> newBlockEventFluxSink) {
         executor.execute(() -> {
             while (true) {
-                Try.run(() -> {
-                    NewBlockEvent event = queue.take();
-                    newBlockEventFluxSink.next(event);
-                }).onFailure(e -> log.error("cannot take from queue {}", e.getMessage()));
+                Try.run(() -> newBlockEventFluxSink.next(queue.take()))
+                   .onFailure(e -> log.error("cannot take from queue {}", e.getMessage()));
             }
         });
     }
