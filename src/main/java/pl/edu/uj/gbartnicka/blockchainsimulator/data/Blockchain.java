@@ -52,7 +52,7 @@ public class Blockchain implements DisposableBean, Jsonable, Serializable {
 
         newBlock.setIndex(prev.getIndex() + 1);
         newBlock.setPrevHash(prev.getHash());
-        newBlock.mineBlock(difficulty);
+        newBlock.mineBlock(Math.max(0, difficulty));
 
         difficulty = adjustDifficulty(prev.getTimestamp(), newBlock.getTimestamp(), difficulty);
 

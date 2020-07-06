@@ -19,6 +19,7 @@ import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.Wallet;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
@@ -83,9 +84,18 @@ public class AppHandler {
 
     @NotNull
     public Mono<ServerResponse> mine(ServerRequest request) {
-        log.warn("Not implemented yet");
+        final var inProgress = blockchainService.mine();
+
         return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
-                             .body(BodyInserters.fromValue("Mining process has started"));
+                .body(BodyInserters.fromValue(Map.of("working", inProgress)));
+    }
+
+    @NotNull
+    public Mono<ServerResponse> mineStatus(ServerRequest request) {
+        final var inProgress = blockchainService.miningInProgress();
+
+        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromValue(Map.of("working", inProgress)));
     }
 
 }

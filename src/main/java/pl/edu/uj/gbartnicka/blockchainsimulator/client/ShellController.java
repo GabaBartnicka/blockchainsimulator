@@ -122,7 +122,7 @@ public class ShellController {
             var pubAddress = new PublicAddress(person.getFullName());
 
             var t = transactionService.createAndBroadcastTransaction(pubAddress, BigDecimal.valueOf(rand.nextFloat()));
-            log.info(t.toPrettyJson());
+//            log.info(t.toPrettyJson());
         }
     }
 }

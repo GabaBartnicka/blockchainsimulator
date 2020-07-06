@@ -22,6 +22,7 @@ public class AppRouter {
                 .andRoute(RequestPredicates.GET("/block/{index}").and(RequestPredicates.accept(MediaType.APPLICATION_JSON)), appHandler::blockByIndex)
                 .andRoute(RequestPredicates.POST("/transaction").and(RequestPredicates.accept(MediaType.APPLICATION_JSON)), transactionsHandler::performTransaction)
                 .andRoute(RequestPredicates.POST("/mine").and(RequestPredicates.accept(MediaType.APPLICATION_JSON)), appHandler::mine)
+                .andRoute(RequestPredicates.GET("/mine/status").and(RequestPredicates.accept(MediaType.APPLICATION_JSON)), appHandler::mineStatus)
                 .andRoute(RequestPredicates.GET("/transactions").and(RequestPredicates.accept(MediaType.APPLICATION_JSON)), transactionsHandler::transactionPool)
                 .andRoute(RequestPredicates.GET("/peers").and(RequestPredicates.accept(MediaType.APPLICATION_JSON)), peersHandler::all)
                 .andRoute(RequestPredicates.GET("/peer/{name}").and(RequestPredicates.accept(MediaType.APPLICATION_JSON)), peersHandler::byName)

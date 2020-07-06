@@ -61,13 +61,13 @@ public class BlockchainService implements Pageable<Block> {
         }).onFailure(e -> log.warn("Blockchain remained the same: {}", e.getMessage()));
     }
 
-    public void mine() {
+    public boolean mine() {
         log.info("Starting mining process");
         final var validTransactions = transactionPool.validTransactions();
 
         if (validTransactions.isEmpty()) {
             log.warn("No transactions in pool!");
-            return;
+            return false;
         }
 
         var rewardTransaction = new RewardTransaction(wallet, blockchain.getWallet());
@@ -77,7 +77,7 @@ public class BlockchainService implements Pageable<Block> {
 
         if (!free.get()) {
             log.warn("Mining in progress");
-            return;
+            return false;
         }
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(() -> {
@@ -87,6 +87,12 @@ public class BlockchainService implements Pageable<Block> {
             publisher.publishEvent(new NewBlockMinedEvent(new BlockEnvelope(newBlock, myself), this));
             transactionPool.clear(validTransactions);
         });
+
+        return true;
+    }
+
+    public boolean miningInProgress() {
+        return !free.get();
     }
 
     public BlockchainEnvelope getBlockchain() {

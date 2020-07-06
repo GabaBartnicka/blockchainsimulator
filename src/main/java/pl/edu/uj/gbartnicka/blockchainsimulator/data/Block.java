@@ -60,7 +60,7 @@ public class Block implements Jsonable, Serializable {
 
     public void mineBlock(int lastBlockDifficulty) {
         difficulty = lastBlockDifficulty;
-        var zeroStr = "0".repeat(Math.max(0, lastBlockDifficulty));
+        var zeroStr = "0".repeat(lastBlockDifficulty);
         do {
             nonce++;
             timestamp = DateTime.now().getMillis();
