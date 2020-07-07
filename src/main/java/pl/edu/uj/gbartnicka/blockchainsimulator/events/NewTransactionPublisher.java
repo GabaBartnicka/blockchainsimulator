@@ -10,10 +10,12 @@ import org.springframework.stereotype.Component;
 import pl.edu.uj.gbartnicka.blockchainsimulator.events.transactions.NewTransactionEvent;
 import reactor.core.publisher.FluxSink;
 
+import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 @Component
@@ -28,20 +30,28 @@ public class NewTransactionPublisher implements ApplicationListener<NewTransacti
     @Override
     public void accept(@NotNull FluxSink<NewTransactionEvent> newTransactionEventFluxSink) {
         AtomicBoolean cancel = new AtomicBoolean(false);
-
         newTransactionEventFluxSink.onCancel(() -> {
                     cancel.set(true);
-                    log.info("newTransactionEventFluxSink canceled");
+                    log.info("newTransactionEventFluxSink cancelled");
                 }
         );
 
         log.info("accept");
         executor.execute(() -> {
+            AtomicReference<NewTransactionEvent> newTransactionEvent = new AtomicReference<>();
             while (!cancel.get()) {
-                Try.run(() -> newTransactionEventFluxSink.next(queue.take()))
-                        .onFailure(e -> log.error("cannot take from queue {}", e.getMessage()))
-                        .onSuccess(b -> log.debug("Emitting event"));
+                var eventOpt = Try.of(queue::take)
+                                  .onFailure(e -> log.error("cannot take from queue {}", e.getMessage()))
+                                  .onSuccess(b -> log.debug("Emitting event"))
+                                  .map(Optional::of)
+                                  .getOrElse(Optional::empty);
+                eventOpt.ifPresent(ev-> {
+                    newTransactionEventFluxSink.next(ev);
+                    newTransactionEvent.set(ev);
+                });
             }
+            onApplicationEvent(newTransactionEvent.get());
+            log.info("exiting loop");
         });
     }
 

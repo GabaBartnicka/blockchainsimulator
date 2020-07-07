@@ -25,10 +25,11 @@ public class EventsController {
     public EventsController(@NotNull NewBlockPublisher newBlockPublisher,
                             @NotNull NewTransactionPublisher newTransactionPublisher) {
         this.newBlockEventFlux = Flux.create(newBlockPublisher).share();
-        this.newTransactionEventFlux = Flux.create(newTransactionPublisher).share();
+        this.newTransactionEventFlux = Flux.create(newTransactionPublisher).log().share();
 
         this.newTransactionEventFlux
-                .doOnCancel(() -> this.newTransactionEventFlux = Flux.create(newTransactionPublisher).log());
+                .doOnCancel(() ->
+                        this.newTransactionEventFlux = Flux.create(newTransactionPublisher).log().share());
     }
 
     @GetMapping(path = "/block", produces = MediaType.TEXT_EVENT_STREAM_VALUE)

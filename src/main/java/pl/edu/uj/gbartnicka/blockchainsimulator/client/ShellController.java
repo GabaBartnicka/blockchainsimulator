@@ -48,7 +48,7 @@ public class ShellController {
     @ShellMethod("list all peers")
     public void listPeers() {
         neighbourhoodService.peers().stream().map(Peer::toString).reduce((s, s2) -> s + "\n" + s2)
-                .ifPresentOrElse(p -> log.info("Peers: \n{}", p), () -> log.info("No peers available!"));
+                            .ifPresentOrElse(p -> log.info("Peers: \n{}", p), () -> log.info("No peers available!"));
     }
 
     @ShellMethod("send ping message")
@@ -107,11 +107,12 @@ public class ShellController {
 
     @ShellMethod("creates new transaction")
     public void transfer(@ShellOption String recipient, @ShellOption Long amount) {
-        final var transaction = transactionService.createAndBroadcastTransaction(new PublicAddress(recipient), BigDecimal.valueOf(amount));
+        final var transaction = transactionService
+                .createAndBroadcastTransaction(new PublicAddress(recipient), BigDecimal.valueOf(amount));
         log.info(transaction.toPrettyJson());
     }
 
-    @ShellMethod("creates new example transaction")
+    @ShellMethod("creates new example transactions")
     public void et() {
         int n = 3;
         Fairy fairy = Fairy.create();
@@ -124,5 +125,16 @@ public class ShellController {
             var t = transactionService.createAndBroadcastTransaction(pubAddress, BigDecimal.valueOf(rand.nextFloat()));
 //            log.info(t.toPrettyJson());
         }
+    }
+
+    @ShellMethod("creates new example transaction")
+    public void t() {
+        Fairy fairy = Fairy.create();
+        Random rand = new Random();
+
+        Person person = fairy.person();
+        var pubAddress = new PublicAddress(person.getFullName());
+
+        var t = transactionService.createAndBroadcastTransaction(pubAddress, BigDecimal.valueOf(rand.nextFloat()));
     }
 }
