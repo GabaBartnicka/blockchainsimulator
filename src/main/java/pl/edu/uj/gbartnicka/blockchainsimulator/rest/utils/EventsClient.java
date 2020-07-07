@@ -14,7 +14,7 @@ import java.util.concurrent.Executors;
 public class EventsClient {
 
     public static void consumeServerSentEvent() {
-        WebClient client = WebClient.create("http://localhost:8001/");
+        WebClient client = WebClient.create("http://localhost:8080/");
         ParameterizedTypeReference<ServerSentEvent<String>> type
                 = new ParameterizedTypeReference<ServerSentEvent<String>>() {
         };
@@ -31,11 +31,11 @@ public class EventsClient {
                 () -> log.info("Completed!!!"));
     }
 
-    public static void main(String[] args) throws InterruptedException {
-        final var countDownLatch = new CountDownLatch(1);
-
-        Executors.newSingleThreadExecutor().execute(EventsClient::consumeServerSentEvent);
-
-        countDownLatch.await();
-    }
+//    public static void main(String[] args) throws InterruptedException {
+//        final var countDownLatch = new CountDownLatch(1);
+//
+//        Executors.newSingleThreadExecutor().execute(EventsClient::consumeServerSentEvent);
+//
+//        countDownLatch.await();
+//    }
 }

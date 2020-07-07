@@ -26,7 +26,7 @@ public class NewTransactionPublisher implements ApplicationListener<NewTransacti
     private final BlockingQueue<NewTransactionEvent> queue = new LinkedBlockingQueue<>();
 
     @Override
-    public void accept(FluxSink<NewTransactionEvent> newTransactionEventFluxSink) {
+    public void accept(@NotNull FluxSink<NewTransactionEvent> newTransactionEventFluxSink) {
         AtomicBoolean cancel = new AtomicBoolean(false);
 
         newTransactionEventFluxSink.onCancel(() -> {
@@ -40,7 +40,7 @@ public class NewTransactionPublisher implements ApplicationListener<NewTransacti
             while (!cancel.get()) {
                 Try.run(() -> newTransactionEventFluxSink.next(queue.take()))
                         .onFailure(e -> log.error("cannot take from queue {}", e.getMessage()))
-                        .onSuccess(b -> log.info("New transaction taken"));
+                        .onSuccess(b -> log.debug("Emitting event"));
             }
         });
     }
@@ -48,6 +48,6 @@ public class NewTransactionPublisher implements ApplicationListener<NewTransacti
     @Override
     public void onApplicationEvent(@NotNull NewTransactionEvent event) {
         final boolean added = queue.offer(event);
-        log.info("event added={}", added);
+        log.debug("event added={}", added);
     }
 }

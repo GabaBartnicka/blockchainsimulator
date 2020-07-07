@@ -20,12 +20,15 @@ import reactor.core.publisher.Flux;
 public class EventsController {
 
     private final Flux<NewBlockEvent> newBlockEventFlux;
-    private final Flux<NewTransactionEvent> newTransactionEventFlux;
+    private Flux<NewTransactionEvent> newTransactionEventFlux;
 
     public EventsController(@NotNull NewBlockPublisher newBlockPublisher,
                             @NotNull NewTransactionPublisher newTransactionPublisher) {
         this.newBlockEventFlux = Flux.create(newBlockPublisher).share();
         this.newTransactionEventFlux = Flux.create(newTransactionPublisher).share();
+
+        this.newTransactionEventFlux
+                .doOnCancel(() -> this.newTransactionEventFlux = Flux.create(newTransactionPublisher).log());
     }
 
     @GetMapping(path = "/block", produces = MediaType.TEXT_EVENT_STREAM_VALUE)

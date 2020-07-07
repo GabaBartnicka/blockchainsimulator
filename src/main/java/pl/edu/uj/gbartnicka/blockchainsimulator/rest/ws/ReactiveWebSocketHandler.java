@@ -15,19 +15,22 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public class ReactiveWebSocketHandler implements WebSocketHandler {
 
-    private final Flux<NewTransactionEvent> newTransactionEventFlux;
+    private Flux<NewTransactionEvent> newTransactionEventFlux;
 
     public ReactiveWebSocketHandler(NewTransactionPublisher newTransactionPublisher) {
-        this.newTransactionEventFlux = Flux.create(newTransactionPublisher);
+        this.newTransactionEventFlux = Flux.create(newTransactionPublisher).log();
+
+        this.newTransactionEventFlux
+                .doOnCancel(() -> this.newTransactionEventFlux = Flux.create(newTransactionPublisher).log());
+
     }
 
     @Override
-    public Mono<Void> handle(@NotNull WebSocketSession webSocketSession) {
-
+    public @NotNull Mono<Void> handle(@NotNull WebSocketSession webSocketSession) {
         return webSocketSession.send(newTransactionEventFlux.map(e -> e.toPublish().toJson())
-                .map(webSocketSession::textMessage))
-                .and(webSocketSession.receive()
-                        .map(WebSocketMessage::getPayloadAsText)
-                        .log());
+                                                            .map(webSocketSession::textMessage))
+                               .and(webSocketSession.receive()
+                                                    .map(WebSocketMessage::getPayloadAsText)
+                                                    .log());
     }
 }

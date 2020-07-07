@@ -36,7 +36,7 @@ public class TransactionService implements Pageable<Transaction> {
             throw new IllegalArgumentException("Balance has to be grater than 0");
         }
         final var transaction = wallet.createTransaction(recipient, amount, transactionPool);
-        log.info("Publishing events about new transaction! {}", transaction.getId());
+        log.debug("Publishing events about new transaction! {}", transaction.getId());
         publisher.publishEvent(new NewTransactionCreatedEvent(this, new TransactionEnvelope(myself, transaction)));
         peerConnector.sendNewTransactionToAll(new TransactionEnvelope(myself, transaction));
         return transaction;
