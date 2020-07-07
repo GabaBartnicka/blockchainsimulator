@@ -39,12 +39,6 @@ public class BlockchainSimulatorApplication {
     @Value("${blockchain.initialBalance}")
     BigDecimal initialBalance;
 
-    @Bean
-    public Executor executor() {
-        return Executors.newSingleThreadExecutor();
-    }
-
-
     public static void main(String[] args) {
         log.info("Params: {}", Stream.of(args).reduce((s, s2) -> s + ", " + s2).orElse("n/a"));
         Security.addProvider(new BouncyCastleProvider());

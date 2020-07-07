@@ -7,8 +7,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pl.edu.uj.gbartnicka.blockchainsimulator.data.Block;
+import pl.edu.uj.gbartnicka.blockchainsimulator.events.MiningStatusPublisher;
 import pl.edu.uj.gbartnicka.blockchainsimulator.events.NewBlockPublisher;
 import pl.edu.uj.gbartnicka.blockchainsimulator.events.NewTransactionPublisher;
+import pl.edu.uj.gbartnicka.blockchainsimulator.events.blocks.MiningEvent;
 import pl.edu.uj.gbartnicka.blockchainsimulator.events.blocks.NewBlockEvent;
 import pl.edu.uj.gbartnicka.blockchainsimulator.events.transactions.NewTransactionEvent;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.Transaction;
@@ -19,17 +21,20 @@ import reactor.core.publisher.Flux;
 @RequestMapping("events")
 public class EventsController {
 
-    private final Flux<NewBlockEvent> newBlockEventFlux;
+    private Flux<NewBlockEvent> newBlockEventFlux;
     private Flux<NewTransactionEvent> newTransactionEventFlux;
+    private Flux<MiningEvent> miningEventFlux;
 
     public EventsController(@NotNull NewBlockPublisher newBlockPublisher,
-                            @NotNull NewTransactionPublisher newTransactionPublisher) {
-        this.newBlockEventFlux = Flux.create(newBlockPublisher).share();
+                            @NotNull NewTransactionPublisher newTransactionPublisher,
+                            @NotNull MiningStatusPublisher miningStatusPublisher) {
+        this.newBlockEventFlux = Flux.create(newBlockPublisher).log().share();
         this.newTransactionEventFlux = Flux.create(newTransactionPublisher).log().share();
+        this.miningEventFlux = Flux.create(miningStatusPublisher).log().share();
 
-        this.newTransactionEventFlux
-                .doOnCancel(() ->
-                        this.newTransactionEventFlux = Flux.create(newTransactionPublisher).log().share());
+        this.newBlockEventFlux.doOnCancel(() -> this.newBlockEventFlux = Flux.create(newBlockPublisher).log().share());
+        this.newTransactionEventFlux.doOnCancel(() -> this.newTransactionEventFlux = Flux.create(newTransactionPublisher).log().share());
+        this.miningEventFlux.doOnCancel(() -> this.miningEventFlux = Flux.create(miningStatusPublisher).log().share());
     }
 
     @GetMapping(path = "/block", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
@@ -42,5 +47,11 @@ public class EventsController {
     public Flux<Transaction> onNewBlockTransaction() {
         log.info("Subscribing to new transaction event");
         return newTransactionEventFlux.map(NewTransactionEvent::toPublish);
+    }
+
+    @GetMapping(path = "/mining", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<MiningStatus> onMine() {
+        log.info("Subscribing to mining event");
+        return miningEventFlux.map(MiningEvent::getStatus);
     }
 }

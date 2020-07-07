@@ -10,6 +10,7 @@ import pl.edu.uj.gbartnicka.blockchainsimulator.data.Block;
 import pl.edu.uj.gbartnicka.blockchainsimulator.data.Blockchain;
 import pl.edu.uj.gbartnicka.blockchainsimulator.data.BlockchainData;
 import pl.edu.uj.gbartnicka.blockchainsimulator.data.BlockchainWithoutChain;
+import pl.edu.uj.gbartnicka.blockchainsimulator.events.blocks.MiningEvent;
 import pl.edu.uj.gbartnicka.blockchainsimulator.events.blocks.NewBlockMinedEvent;
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.Peer;
 import pl.edu.uj.gbartnicka.blockchainsimulator.neighbourhood.PeerConnector;
@@ -83,7 +84,11 @@ public class BlockchainService implements Pageable<Block> {
         executor.execute(() -> {
             log.info("Started mining process with {} transactions", validTransactions.size());
             free.set(false);
+
+            publisher.publishEvent(new MiningEvent(this, true));
             final var newBlock = blockchain.mine(block);
+            publisher.publishEvent(new MiningEvent(this, false));
+
             free.set(true);
             publisher.publishEvent(new NewBlockMinedEvent(new BlockEnvelope(newBlock, myself), this));
             transactionPool.clear(validTransactions);

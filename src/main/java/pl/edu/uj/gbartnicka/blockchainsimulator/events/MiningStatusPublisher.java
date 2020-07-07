@@ -6,8 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
-import pl.edu.uj.gbartnicka.blockchainsimulator.events.blocks.NewBlockEvent;
-import pl.edu.uj.gbartnicka.blockchainsimulator.events.transactions.NewTransactionEvent;
+import pl.edu.uj.gbartnicka.blockchainsimulator.events.blocks.MiningEvent;
 import reactor.core.publisher.FluxSink;
 
 import java.util.Optional;
@@ -22,25 +21,25 @@ import java.util.function.Consumer;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class NewBlockPublisher implements ApplicationListener<NewBlockEvent>, Consumer<FluxSink<NewBlockEvent>> {
+public class MiningStatusPublisher implements ApplicationListener<MiningEvent>, Consumer<FluxSink<MiningEvent>> {
 
     private final Executor executor = Executors.newSingleThreadExecutor();
-    private final BlockingQueue<NewBlockEvent> queue = new LinkedBlockingQueue<>();
+    private final BlockingQueue<MiningEvent> queue = new LinkedBlockingQueue<>();
 
     @Override
-    public void accept(@NotNull FluxSink<NewBlockEvent> fluxSink) {
+    public void accept(@NotNull FluxSink<MiningEvent> fluxSink) {
         AtomicBoolean cancel = new AtomicBoolean(false);
         fluxSink.onCancel(() -> {
                     cancel.set(true);
-                    log.info("newBlockEventFluxSink cancelled");
+                    log.info("miningEventFluxSink cancelled");
                 }
         );
 
         executor.execute(() -> {
-            AtomicReference<NewBlockEvent> newBlockEvent = new AtomicReference<>();
+            AtomicReference<MiningEvent> newBlockEvent = new AtomicReference<>();
             while (!cancel.get()) {
                 var eventOpt = Try.of(queue::take)
-                                  .onFailure(e -> log.error("cannot take new block event from queue {}", e.getMessage()))
+                                  .onFailure(e -> log.error("cannot take mining event from queue {}", e.getMessage()))
                                   .onSuccess(b -> log.debug("Emitting event"))
                                   .map(Optional::of)
                                   .getOrElse(Optional::empty);
@@ -55,7 +54,7 @@ public class NewBlockPublisher implements ApplicationListener<NewBlockEvent>, Co
     }
 
     @Override
-    public void onApplicationEvent(@NotNull NewBlockEvent event) {
+    public void onApplicationEvent(@NotNull MiningEvent event) {
         final boolean added = queue.offer(event);
         log.debug("event added={}", added);
     }

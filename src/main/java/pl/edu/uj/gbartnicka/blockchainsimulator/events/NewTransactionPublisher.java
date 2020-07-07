@@ -13,6 +13,7 @@ import reactor.core.publisher.FluxSink;
 import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -24,19 +25,18 @@ import java.util.function.Consumer;
 @Getter
 public class NewTransactionPublisher implements ApplicationListener<NewTransactionEvent>, Consumer<FluxSink<NewTransactionEvent>> {
 
-    private final Executor executor;
+    private final Executor executor = Executors.newSingleThreadExecutor();
     private final BlockingQueue<NewTransactionEvent> queue = new LinkedBlockingQueue<>();
 
     @Override
-    public void accept(@NotNull FluxSink<NewTransactionEvent> newTransactionEventFluxSink) {
+    public void accept(@NotNull FluxSink<NewTransactionEvent> fluxSink) {
         AtomicBoolean cancel = new AtomicBoolean(false);
-        newTransactionEventFluxSink.onCancel(() -> {
+        fluxSink.onCancel(() -> {
                     cancel.set(true);
                     log.info("newTransactionEventFluxSink cancelled");
                 }
         );
 
-        log.info("accept");
         executor.execute(() -> {
             AtomicReference<NewTransactionEvent> newTransactionEvent = new AtomicReference<>();
             while (!cancel.get()) {
@@ -46,12 +46,12 @@ public class NewTransactionPublisher implements ApplicationListener<NewTransacti
                                   .map(Optional::of)
                                   .getOrElse(Optional::empty);
                 eventOpt.ifPresent(ev-> {
-                    newTransactionEventFluxSink.next(ev);
+                    fluxSink.next(ev);
                     newTransactionEvent.set(ev);
                 });
             }
             onApplicationEvent(newTransactionEvent.get());
-            log.info("exiting loop");
+            log.debug("exiting loop");
         });
     }
 
