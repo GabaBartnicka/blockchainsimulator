@@ -23,7 +23,7 @@ import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.Random;
 
-@Profile({"!dev"})
+@Profile({"default"})
 @Slf4j
 @ShellComponent
 @RequiredArgsConstructor

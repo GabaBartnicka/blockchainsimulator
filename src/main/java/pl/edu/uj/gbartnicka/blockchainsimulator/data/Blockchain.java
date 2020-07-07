@@ -111,6 +111,13 @@ public class Blockchain implements DisposableBean, Jsonable, Serializable {
         this.chain = another.chain;
     }
 
+    public void replaceForce(@NotNull Blockchain another) {
+        log.warn("Replacing blockchain!");
+        this.difficulty = another.difficulty;
+        this.mineRate = another.mineRate;
+        this.chain = another.chain;
+    }
+
     public void addTestBlock(Block block) {
         block.setPrevHash(getLastBlock().getHash());
         block.setHash(block.calculateHash());

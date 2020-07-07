@@ -82,6 +82,7 @@ public class BlockchainService implements Pageable<Block> {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(() -> {
             log.info("Started mining process with {} transactions", validTransactions.size());
+            free.set(false);
             final var newBlock = blockchain.mine(block);
             free.set(true);
             publisher.publishEvent(new NewBlockMinedEvent(new BlockEnvelope(newBlock, myself), this));
@@ -92,6 +93,7 @@ public class BlockchainService implements Pageable<Block> {
     }
 
     public boolean miningInProgress() {
+        log.info("free: {}", free.get());
         return !free.get();
     }
 
