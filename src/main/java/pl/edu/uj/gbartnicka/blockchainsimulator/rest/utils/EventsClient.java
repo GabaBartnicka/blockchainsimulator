@@ -9,15 +9,18 @@ import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.Transaction;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Slf4j
 public class EventsClient {
 
     public static void consumeServerSentEvent() {
-        WebClient client = WebClient.create("http://localhost:8080/");
-        ParameterizedTypeReference<ServerSentEvent<String>> type
-                = new ParameterizedTypeReference<ServerSentEvent<String>>() {
-        };
+        WebClient client = WebClient.create("http://localhost:8001/");
+//        WebClient client = WebClient.create("http://localhost:8080/");
+//        ParameterizedTypeReference<ServerSentEvent<String>> type
+//                = new ParameterizedTypeReference<ServerSentEvent<String>>() {
+//        };
 
         var eventStream = client.get()
                 .uri("/events/transaction")
@@ -31,11 +34,13 @@ public class EventsClient {
                 () -> log.info("Completed!!!"));
     }
 
-//    public static void main(String[] args) throws InterruptedException {
-//        final var countDownLatch = new CountDownLatch(1);
-//
-//        Executors.newSingleThreadExecutor().execute(EventsClient::consumeServerSentEvent);
-//
-//        countDownLatch.await();
-//    }
+    public static void main(String[] args) throws InterruptedException {
+
+        final var countDownLatch = new CountDownLatch(1);
+
+        Executors.newSingleThreadExecutor().execute(EventsClient::consumeServerSentEvent);
+
+        countDownLatch.await();
+    }
+
 }

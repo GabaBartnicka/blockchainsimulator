@@ -36,7 +36,7 @@ public class MiningStatusPublisher implements ApplicationListener<MiningEvent>, 
         );
 
         executor.execute(() -> {
-            AtomicReference<MiningEvent> newBlockEvent = new AtomicReference<>();
+            AtomicReference<MiningEvent> newEvent = new AtomicReference<>();
             while (!cancel.get()) {
                 var eventOpt = Try.of(queue::take)
                                   .onFailure(e -> log.error("cannot take mining event from queue {}", e.getMessage()))
@@ -45,10 +45,10 @@ public class MiningStatusPublisher implements ApplicationListener<MiningEvent>, 
                                   .getOrElse(Optional::empty);
                 eventOpt.ifPresent(ev -> {
                     fluxSink.next(ev);
-                    newBlockEvent.set(ev);
+                    newEvent.set(ev);
                 });
             }
-            onApplicationEvent(newBlockEvent.get());
+            onApplicationEvent(Optional.ofNullable(newEvent.get()).orElseGet(() -> new MiningEvent(this, false)));
             log.debug("exiting loop");
         });
     }

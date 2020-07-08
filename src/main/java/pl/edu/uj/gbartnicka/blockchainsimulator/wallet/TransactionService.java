@@ -28,6 +28,7 @@ public class TransactionService implements Pageable<Transaction> {
 
     public void handleIncomingTransaction(@NotNull TransactionEnvelope envelope) {
         log.info("Received {}", envelope);
+        transactionPool.addOrUpdate(envelope.getTransaction());
     }
 
     @NotNull

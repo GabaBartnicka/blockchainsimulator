@@ -72,7 +72,18 @@ public class Block implements Jsonable, Serializable {
 
     static @NotNull Block genesis(int difficulty) {
         var block = new Block(0, "Block genesis", difficulty);
-        block.calculateHash();
+        block.setHash(block.calculateHash());
         return block;
     }
+    // wstep
+    // motywacja
+    // cele
+    //zakres
+    // cognitive class
+
+    // 1.09
+
+    // podsumowanie
+    // co sie udalo
+    // jak mozna rozszerzyc
 }

@@ -12,17 +12,23 @@ import org.springframework.stereotype.Service;
 import pl.edu.uj.gbartnicka.blockchainsimulator.network.*;
 import reactor.core.publisher.Mono;
 
+import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-//@Profile("!dev")
 public class PeerConnectorImpl implements PeerConnector {
     private final RSocketRequester.Builder rsocketRequesterBuilder;
     private final Map<Peer, Mono<RSocketRequester>> connections = new HashMap<>();
     private final Peer myself;
+    private final NeighbourhoodService neighbourhoodService;
+
+    @PostConstruct
+    public void init() {
+        neighbourhoodService.peers().forEach(this::establishConnection);
+    }
 
     @Override
     public void establishConnection(Peer peer) {
@@ -88,6 +94,7 @@ public class PeerConnectorImpl implements PeerConnector {
 
     @Override
     public void sendNewTransactionToAll(@NotNull TransactionEnvelope transaction) {
+        log.info("Sending transaction info to others");
         sendRequestToAll(transaction, "new-transaction", CommonResponse.class);
     }
 

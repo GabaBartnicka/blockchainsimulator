@@ -46,7 +46,7 @@ public class ShellController {
     }
 
     @ShellMethod("list all peers")
-    public void listPeers() {
+    public void peers() {
         neighbourhoodService.peers().stream().map(Peer::toString).reduce((s, s2) -> s + "\n" + s2)
                             .ifPresentOrElse(p -> log.info("Peers: \n{}", p), () -> log.info("No peers available!"));
     }
