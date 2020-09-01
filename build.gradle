@@ -29,16 +29,28 @@ node {
     download = true
 
     // Set the work directory for unpacking node
-    workDir = file("${project.buildDir}/nodejs")
+    workDir = file("${project.buildDir}/frontend/nodejs")
 
     // Set the work directory for NPM
-    npmWorkDir = file("${project.buildDir}/npm")
+    npmWorkDir = file("${project.buildDir}/frontend/npm")
 
     // Set the work directory for Yarn
-    yarnWorkDir = file("${project.buildDir}/yarn")
+    yarnWorkDir = file("${project.buildDir}/frontend/yarn")
 
     // Set the work directory where node_modules should be located
     nodeModulesDir = file("${project.projectDir}")
+}
+
+task bundle(type: YarnTask) {
+    inputs.files(fileTree("${project.buildDir}/frontend/node_modules"))
+    inputs.files(fileTree("${project.buildDir}/frontend/src"))
+    inputs.file("${project.buildDir}/frontend/package.json")
+    inputs.file("${project.buildDir}/frontend/webpack.config.js")
+
+    outputs.dir('build/resources/main/static')
+
+    dependsOn yarn_install
+    args = ['run', 'build']
 }
 
 task copyWebApp(type: Copy) {
