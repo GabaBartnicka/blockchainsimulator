@@ -46,7 +46,7 @@ export const NewTransactionDialog: FC<any> = () => {
     const handleAdd = () => {
         const {name, label, amount} = formData
         if (name && label && amount) {
-            API.post('/transaction', {publicAddress: {name, label}, amount})
+            API.post('/v0/transaction', {publicAddress: {name, label}, amount})
                 .then((response) => {
                     setFormData(initialFormData)
                     handleClose()

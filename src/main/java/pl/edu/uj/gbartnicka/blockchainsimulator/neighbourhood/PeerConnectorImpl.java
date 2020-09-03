@@ -47,10 +47,7 @@ public class PeerConnectorImpl implements PeerConnector {
     public void ping(Peer peer) {
         log.info("Ping to {}", peer);
         var data = new SimpleMessage("ping", myself);
-        if (!connections.containsKey(peer)) {
-            log.warn("No connection to peer {}, trying to establish", peer);
-            establishConnection(peer);
-        }
+        establishConnectionIfNeeded(peer);
 
         Try.run(() -> {
             final RSocketRequester rSocketRequester = connections.get(peer).block();
@@ -58,6 +55,35 @@ public class PeerConnectorImpl implements PeerConnector {
                                            .block();
             log.info("Response: {}", response);
         }).onFailure(e -> log.error("Cannot send ping to peer {} - {}", peer, e.getMessage()));
+    }
+
+    private void establishConnectionIfNeeded(Peer peer) {
+        if (!connections.containsKey(peer)) {
+            log.warn("No connection to peer {}, trying to establish", peer);
+            establishConnection(peer);
+        }
+    }
+
+    public boolean ping(@NotNull String peerName) {
+        var peerOptional = neighbourhoodService.peer(peerName);
+        if(peerOptional.isEmpty())
+            return false;
+        var peer = peerOptional.get();
+
+        log.info("Ping to {}", peer);
+        establishConnectionIfNeeded(peer);
+
+        return Try.of(() -> {
+            final RSocketRequester rSocketRequester = connections.get(peer).block();
+            var response = rSocketRequester.route("request-response")
+                                           .data(new SimpleMessage("ping", myself))
+                                           .retrieveMono(SimpleMessage.class)
+                                           .block();
+            log.info("Response: {}", response);
+            return true;
+        })
+           .onFailure(e -> log.error("Cannot send ping to peer {} - {}", peer, e.getMessage()))
+           .getOrElse(false);
     }
 
     @Override
@@ -69,10 +95,7 @@ public class PeerConnectorImpl implements PeerConnector {
     @Override
     public BlockchainEnvelope askForBlockchain(@NotNull Peer peer) {
         var data = new SimpleMessage("ping", myself);
-        if (!connections.containsKey(peer)) {
-            log.warn("No connection to peer {}, trying to establish", peer);
-            establishConnection(peer);
-        }
+        establishConnectionIfNeeded(peer);
 
         return Try.of(() -> {
             final RSocketRequester rSocketRequester = connections.get(peer).block();

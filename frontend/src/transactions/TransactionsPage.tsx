@@ -14,7 +14,7 @@ export const TransactionPage = () => {
     const snackbar = useSnackbar()
 
     const handleMine = () => {
-        API.post('mine/').then((response) => {
+        API.post('v0/mine/').then((response) => {
             getTransactionsFromApi()
         })
     }

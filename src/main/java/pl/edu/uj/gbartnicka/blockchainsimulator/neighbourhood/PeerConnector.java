@@ -11,6 +11,8 @@ public interface PeerConnector {
 
     void ping(Peer peer);
 
+    boolean ping(@NotNull String peerName) ;
+
     List<BlockchainEnvelope> askForBlockchain();
 
     BlockchainEnvelope askForBlockchain(@NotNull Peer peer);

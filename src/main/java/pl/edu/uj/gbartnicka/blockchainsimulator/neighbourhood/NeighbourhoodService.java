@@ -51,6 +51,13 @@ public class NeighbourhoodService implements DisposableBean {
         }
     }
 
+    public boolean addPeerIfDoesNotExist(@NotNull Peer peer) {
+        if(peer(peer.getName()).isEmpty()) {
+            return false;
+        }
+        return peers.add(peer);
+    }
+
     public Set<Peer> peers() {
         return new HashSet<>(peers);
     }
@@ -70,5 +77,13 @@ public class NeighbourhoodService implements DisposableBean {
 
     public Optional<Peer> findByName(@NotNull String name) {
         return peers.stream().filter(p -> p.getName().equals(name)).findFirst();
+    }
+
+    public void delete(@NotNull Peer peer) {
+        peers.remove(peer);
+    }
+
+    public void delete(@NotNull String name) {
+        peer(name).ifPresent(this::delete);
     }
 }
