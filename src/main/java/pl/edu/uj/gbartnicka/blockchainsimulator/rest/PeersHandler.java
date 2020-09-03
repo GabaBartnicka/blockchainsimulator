@@ -42,22 +42,20 @@ public class PeersHandler {
     }
 
     public @NotNull Mono<ServerResponse> addNewPeer(@NotNull ServerRequest request) {
-        /*
-        name
-        port
-        host
-         */
+        log.info("Adding new peer");
         var message = request.bodyToMono(Peer.class).map(newPeer -> {
+            log.info("Adding new peer: {}", newPeer);
             if (neighbourhoodService.addPeerIfDoesNotExist(newPeer)) {
                 return "ok";
             }
             return "Peer " + newPeer + "already exists";
         });
-
+        log.info("{}", message);
         return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(message, String.class);
     }
 
     public @NotNull Mono<ServerResponse> deletePeer(@NotNull ServerRequest request) {
+        log.info("Adding new peer");
         final var name = request.pathVariable("name");
         if (StringUtils.isBlank(name)) {
             return ServerResponse.notFound().build();
@@ -66,9 +64,11 @@ public class PeersHandler {
         return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(BodyInserters.fromValue("deleted"));
     }
 
-    public Mono<ServerResponse> ping(@NotNull ServerRequest request) {
+    public @NotNull Mono<ServerResponse> ping(@NotNull ServerRequest request) {
         final var name = request.pathVariable("name");
+        log.info("Pinging peer: {}", name);
         if (StringUtils.isBlank(name)) {
+            log.warn("No name found!");
             return ServerResponse.notFound().build();
         }
         var pinged = peerConnector.ping(name);

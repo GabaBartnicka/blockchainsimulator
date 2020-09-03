@@ -52,7 +52,7 @@ public class NeighbourhoodService implements DisposableBean {
     }
 
     public boolean addPeerIfDoesNotExist(@NotNull Peer peer) {
-        if(peer(peer.getName()).isEmpty()) {
+        if (peer(peer.getName()).isPresent()) {
             return false;
         }
         return peers.add(peer);

@@ -2,6 +2,7 @@ import React, {useEffect, useMemo, useState} from 'react'
 import {Box, CircularProgress, Grid, Paper, Typography} from '@material-ui/core'
 import {API} from '../api'
 import {NodesGraph} from './NodesGraph'
+import {NewNodeDialog} from './NewNodeDialog'
 
 export const NodesPage = () => {
     const [peers, setPeers] = useState(null)
@@ -33,17 +34,20 @@ export const NodesPage = () => {
     }, [peers])
 
     return (
-        <Grid container spacing={1}>
-            <Grid item xs={12}>
-                <Paper>
-                    <Box p={2}>
-                        <Typography variant={'h5'}>Nodes</Typography>
-                    </Box>
-                </Paper>
+        <>
+            <Grid container spacing={1}>
+                <Grid item xs={12}>
+                    <Paper>
+                        <Box p={2}>
+                            <Typography variant={'h5'}>Nodes</Typography>
+                        </Box>
+                    </Paper>
+                </Grid>
+                <Grid item xs={12}>
+                    <Paper>{peers ? <NodesGraph data={graphData}/> : <CircularProgress/>}</Paper>
+                </Grid>
             </Grid>
-            <Grid item xs={12}>
-                <Paper>{peers ? <NodesGraph data={graphData}/> : <CircularProgress/>}</Paper>
-            </Grid>
-        </Grid>
+            <NewNodeDialog/>
+        </>
     )
 }
