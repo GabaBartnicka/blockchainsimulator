@@ -34,13 +34,13 @@ public class EventsClient {
                 () -> log.info("Completed!!!"));
     }
 
-    public static void main(String[] args) throws InterruptedException {
-
-        final var countDownLatch = new CountDownLatch(1);
-
-        Executors.newSingleThreadExecutor().execute(EventsClient::consumeServerSentEvent);
-
-        countDownLatch.await();
-    }
+//    public static void main(String[] args) throws InterruptedException {
+//
+//        final var countDownLatch = new CountDownLatch(1);
+//
+//        Executors.newSingleThreadExecutor().execute(EventsClient::consumeServerSentEvent);
+//
+//        countDownLatch.await();
+//    }
 
 }
