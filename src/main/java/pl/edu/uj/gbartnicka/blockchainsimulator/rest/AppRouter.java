@@ -11,6 +11,8 @@ import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
+import java.net.URI;
+
 import static org.springframework.web.reactive.function.server.RequestPredicates.*;
 import static org.springframework.web.reactive.function.server.ServerResponse.ok;
 
@@ -22,6 +24,9 @@ public class AppRouter {
         return RouterFunctions
                 .resources("/**", new ClassPathResource("public/"))
                 .andRoute(GET("/"), request -> ok().contentType(MediaType.TEXT_HTML).bodyValue(indexHtml))
+                .andRoute(GET("/blockchain"),  req -> ServerResponse.temporaryRedirect(URI.create("/")).build())
+                .andRoute(GET("/transactions"),  req -> ServerResponse.temporaryRedirect(URI.create("/")).build())
+                .andRoute(GET("/nodes"),  req -> ServerResponse.temporaryRedirect(URI.create("/")).build())
                 .andRoute(GET("/v0/hello").and(accept(MediaType.TEXT_PLAIN)), appHandler::hello)
                 .andRoute(GET("/v0/wallet").and(accept(MediaType.APPLICATION_JSON)), appHandler::wallet)
                 .andRoute(GET("/v0/balance").and(accept(MediaType.APPLICATION_JSON)), appHandler::balance)
