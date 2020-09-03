@@ -17,7 +17,7 @@ export const BlockchainContextProvider = (props) => {
 
     const blockchainListApiCall = (from?: number, to?: number) => {
         return API.get(
-            'blocks/',
+            'v0/blocks/',
             from &&
             to && {
                 params: {

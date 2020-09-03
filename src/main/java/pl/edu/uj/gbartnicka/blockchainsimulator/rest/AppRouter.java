@@ -22,18 +22,18 @@ public class AppRouter {
         return RouterFunctions
                 .resources("/**", new ClassPathResource("public/"))
                 .andRoute(GET("/"), request -> ok().contentType(MediaType.TEXT_HTML).bodyValue(indexHtml))
-                .andRoute(GET("/hello").and(accept(MediaType.TEXT_PLAIN)), appHandler::hello)
-                .andRoute(GET("/wallet").and(accept(MediaType.APPLICATION_JSON)), appHandler::wallet)
-                .andRoute(GET("/balance").and(accept(MediaType.APPLICATION_JSON)), appHandler::balance)
-                .andRoute(GET("/blocks").and(accept(MediaType.APPLICATION_JSON)), appHandler::blocks)
-                .andRoute(GET("/block/{index}").and(accept(MediaType.APPLICATION_JSON)), appHandler::blockByIndex)
-                .andRoute(POST("/transaction").and(accept(MediaType.APPLICATION_JSON)), transactionsHandler::performTransaction)
-                .andRoute(POST("/mine").and(accept(MediaType.APPLICATION_JSON)), appHandler::mine)
-                .andRoute(GET("/mine/status").and(accept(MediaType.APPLICATION_JSON)), appHandler::mineStatus)
-                .andRoute(GET("/transactions").and(accept(MediaType.APPLICATION_JSON)), transactionsHandler::transactionPool)
-                .andRoute(GET("/peers").and(accept(MediaType.APPLICATION_JSON)), peersHandler::all)
-                .andRoute(GET("/peer/{name}").and(accept(MediaType.APPLICATION_JSON)), peersHandler::byName)
-                .andRoute(GET("/blockchain").and(accept(MediaType.APPLICATION_JSON)), appHandler::blockchain);
+                .andRoute(GET("/v0/hello").and(accept(MediaType.TEXT_PLAIN)), appHandler::hello)
+                .andRoute(GET("/v0/wallet").and(accept(MediaType.APPLICATION_JSON)), appHandler::wallet)
+                .andRoute(GET("/v0/balance").and(accept(MediaType.APPLICATION_JSON)), appHandler::balance)
+                .andRoute(GET("/v0/blocks").and(accept(MediaType.APPLICATION_JSON)), appHandler::blocks)
+                .andRoute(GET("/v0/block/{index}").and(accept(MediaType.APPLICATION_JSON)), appHandler::blockByIndex)
+                .andRoute(POST("/v0/transaction").and(accept(MediaType.APPLICATION_JSON)), transactionsHandler::performTransaction)
+                .andRoute(POST("/v0/mine").and(accept(MediaType.APPLICATION_JSON)), appHandler::mine)
+                .andRoute(GET("/v0/mine/status").and(accept(MediaType.APPLICATION_JSON)), appHandler::mineStatus)
+                .andRoute(GET("/v0/transactions").and(accept(MediaType.APPLICATION_JSON)), transactionsHandler::transactionPool)
+                .andRoute(GET("/v0/peers").and(accept(MediaType.APPLICATION_JSON)), peersHandler::all)
+                .andRoute(GET("/v0/peer/{name}").and(accept(MediaType.APPLICATION_JSON)), peersHandler::byName)
+                .andRoute(GET("/v0/blockchain").and(accept(MediaType.APPLICATION_JSON)), appHandler::blockchain);
         // @formatter:on
     }
 }

@@ -21,7 +21,7 @@ export const TransactionPage = () => {
 
     const getTransactionsFromApi = () => {
         setLoading(true)
-        return API.get('transactions/')
+        return API.get('v0/transactions/')
             .then((response) => {
                 setTransactions(response.data)
             })

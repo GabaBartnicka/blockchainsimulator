@@ -37,19 +37,19 @@ public class EventsController {
         this.miningEventFlux.doOnCancel(() -> this.miningEventFlux = Flux.create(miningStatusPublisher).log().share());
     }
 
-    @GetMapping(path = "/block", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @GetMapping(path = "/v0/block", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<Block> onNewBlockSubscribe() {
         log.info("Subscribing to new block event");
         return newBlockEventFlux.map(NewBlockEvent::toPublish);
     }
 
-    @GetMapping(path = "/transaction", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @GetMapping(path = "/v0/transaction", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<Transaction> onNewBlockTransaction() {
         log.info("Subscribing to new transaction event");
         return newTransactionEventFlux.map(NewTransactionEvent::toPublish);
     }
 
-    @GetMapping(path = "/mining", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @GetMapping(path = "/v0/mining", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<MiningStatus> onMine() {
         log.info("Subscribing to mining event");
         return miningEventFlux.map(MiningEvent::getStatus);

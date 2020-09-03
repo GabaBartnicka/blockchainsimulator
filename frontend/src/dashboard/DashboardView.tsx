@@ -6,7 +6,7 @@ export const DashboardView = () => {
     const [blockchainInfo, setBlockchainInfo] = useState(null)
 
     useEffect(() => {
-        API.get('blockchain/').then((response) => {
+        API.get('v0/blockchain/').then((response) => {
             setBlockchainInfo(response.data)
         })
     }, [])

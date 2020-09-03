@@ -7,7 +7,7 @@ export const NodesPage = () => {
     const [peers, setPeers] = useState(null)
 
     useEffect(() => {
-        API.get('peers/').then((response) => {
+        API.get('v0/peers/').then((response) => {
             setPeers(response.data)
         })
     }, [])

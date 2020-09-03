@@ -23,7 +23,7 @@ export const BlockCard = () => {
     useEffect(() => {
         setBlock(null)
         setError(false)
-        API.get(`block/${blockId}`)
+        API.get(`v0/block/${blockId}`)
             .then((response) => {
                 setBlock(response.data)
             })

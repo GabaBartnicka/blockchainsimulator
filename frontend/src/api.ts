@@ -9,7 +9,7 @@ export const API = axios.create({
 
 export const miningStatus = (callback) => {
     const interval = setInterval(() => {
-        API.get('/mine/status').then((response) => callback(response))
+        API.get('/v0/mine/status').then((response) => callback(response))
     }, 5000)
 }
 
