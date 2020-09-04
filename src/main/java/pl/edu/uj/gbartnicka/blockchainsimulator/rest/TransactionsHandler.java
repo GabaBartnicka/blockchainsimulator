@@ -12,6 +12,8 @@ import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.Transaction;
 import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.TransactionService;
 import reactor.core.publisher.Mono;
 
+import java.util.Optional;
+
 @Component
 @RequiredArgsConstructor
 @Slf4j
@@ -21,8 +23,12 @@ public class TransactionsHandler {
     @NotNull
     public Mono<ServerResponse> transactionPool(@NotNull ServerRequest request) {
         var transactionSize = transactionService.numberOfTransactions();
-        final var from = request.queryParam("from").map(Integer::valueOf).orElse(Math.max(transactionSize - 10, 0));
-        final var to = request.queryParam("to").map(Integer::valueOf).orElse(transactionSize);
+
+        var fromQuery = request.queryParam("from");
+        var toQuery = request.queryParam("to");
+
+        final var from = fromQuery.map(Integer::valueOf).orElse(Math.max(transactionSize - 10, 0));
+        final var to = toQuery.map(Integer::valueOf).orElse(transactionSize);
         log.info("Fetching transactions: from={}, to={}", from, to);
 
         final var transactions = transactionService.ranged(from, to);

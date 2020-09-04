@@ -3,12 +3,39 @@ plugins {
     id 'io.spring.dependency-management' version '1.0.9.RELEASE'
     id 'com.google.cloud.tools.jib' version '2.4.0'
     id 'java'
+    id "com.github.node-gradle.node" version "2.2.4"
 }
 
 group = 'pl.edu.uj.gbartnicka'
 version = '0.0.1'
 sourceCompatibility = 14
 targetCompatibility = 14
+
+node {
+    version = '12.18.1'
+    yarnVersion = ''
+    distBaseUrl = 'https://nodejs.org/dist'
+    download = true
+    workDir = file("${project.projectDir}/.gradle/nodejs")
+    yarnWorkDir = file("${project.projectDir}/.gradle/yarn")
+    nodeModulesDir = file("${project.projectDir}/frontend/node_modules")
+}
+
+task bundle(type: YarnTask) {
+    inputs.files(fileTree('frontend/node_modules'))
+    inputs.files(fileTree('frontend/src'))
+    inputs.file('frontend/package.json')
+
+    outputs.dir("${project.projectDir}/build/resources/static")
+
+    dependsOn yarn_install
+    args = ['run', 'build']
+}
+
+task copyWebApp(type: Copy) {
+    from 'frontend/build'
+    into 'src/main/resources/public/.'
+}
 
 configurations {
     compileOnly {
@@ -33,6 +60,10 @@ jib {
         image = "gaba-blockchain:0.0.1-SNAPSHOT"
         tags = ['latest']
     }
+}
+
+task webpack(type: Exec) {
+    commandLine "$projectDir/frontend/node_modules/.bin/webpack", "app/index.js", "$buildDir/js/bundle.js"
 }
 
 dependencies {

@@ -75,15 +75,4 @@ public class Block implements Jsonable, Serializable {
         block.setHash(block.calculateHash());
         return block;
     }
-    // wstep
-    // motywacja
-    // cele
-    //zakres
-    // cognitive class
-
-    // 1.09
-
-    // podsumowanie
-    // co sie udalo
-    // jak mozna rozszerzyc
 }

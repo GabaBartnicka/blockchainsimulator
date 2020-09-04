@@ -7,16 +7,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
-import pl.edu.uj.gbartnicka.blockchainsimulator.data.Block;
 import pl.edu.uj.gbartnicka.blockchainsimulator.data.Blockchain;
-import pl.edu.uj.gbartnicka.blockchainsimulator.data.BlockchainData;
 import pl.edu.uj.gbartnicka.blockchainsimulator.hooks.DataGenerator;
 import pl.edu.uj.gbartnicka.blockchainsimulator.service.BlockchainService;
-import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.PublicAddress;
-import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.RewardTransaction;
-import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.TransactionService;
-import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.TransactionPool;
-import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.Wallet;
+import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.*;
 
 import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
@@ -37,22 +31,18 @@ public class DevDataGeneratorImpl implements DataGenerator {
     public void init() {
         log.info("Dev profile, generating test data.....");
 
+        var numberOfTransactions = 3;
         Fairy fairy = Fairy.create();
         Random rand = new Random();
 
-        for (int j = 0; j < 1000; j++) {
-            for (int i = 0; i < 3; i++) {
-                createTransaction(fairy, rand);
-            }
-            final var validTransactions = transactionPool.validTransactions();
-            var rewardTransaction = new RewardTransaction(wallet, blockchain.getWallet());
-            validTransactions.add(rewardTransaction);
-
-            Block block = new Block(new BlockchainData(validTransactions));
-
-            blockchain.addTestBlock(block);
-            transactionPool.clear();
+        for (int i = 0; i < numberOfTransactions; i++) {
+            createTransaction(fairy, rand);
         }
+
+        final var validTransactions = transactionPool.validTransactions();
+        var rewardTransaction = new RewardTransaction(wallet, blockchain.getWallet());
+        validTransactions.add(rewardTransaction);
+        blockchainService.mine();
     }
 
     private void createTransaction(@NotNull Fairy fairy, @NotNull Random rand) {

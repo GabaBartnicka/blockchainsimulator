@@ -119,7 +119,12 @@ public class BlockchainService implements Pageable<Block> {
     @NotNull
     @Override
     public List<Block> ranged(@NotNull Integer from, @NotNull Integer to) {
-        final List<Block> collect = blockchain.getChain().stream().skip(from).limit(to + 1L - from)
+        if(from < 0 || to < 0)
+            return Collections.emptyList();
+
+        final List<Block> collect = blockchain.getChain().stream()
+                                              .skip(from)
+                                              .limit(to + 1L - from)
                                               .collect(Collectors.toList());
         Collections.reverse(collect);
         return collect;

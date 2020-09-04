@@ -2,11 +2,18 @@ package pl.edu.uj.gbartnicka.blockchainsimulator.service;
 
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import pl.edu.uj.gbartnicka.blockchainsimulator.data.Block;
 import pl.edu.uj.gbartnicka.blockchainsimulator.data.Blockchain;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
 class BlockchainServiceTest {
 
     @Test
@@ -28,5 +35,33 @@ class BlockchainServiceTest {
 
         var blockReconciler = new BlockReconciler();
 
+    }
+
+    @Test
+    void testGetRangedNegativeValues() {
+        Blockchain blockchain = mock(Blockchain.class);
+        BlockchainService blockchainService = spy(new BlockchainService(
+                blockchain, null, null, null, null, null
+        ));
+
+        var ranged = blockchainService.ranged(-51, -1);
+
+        assertThat(ranged).isEmpty();
+    }
+
+    @Test
+    void testGetRanged() {
+        Blockchain blockchain = mock(Blockchain.class);
+        BlockchainService blockchainService = spy(new BlockchainService(
+                blockchain, null, null, null, null, null
+        ));
+
+        var block2 = new Block(2, "a");
+        var block3 = new Block(3, "a");
+        when(blockchain.getChain()).thenReturn(Arrays.asList(new Block(1, "d"), block2, block3));
+
+        var ranged = blockchainService.ranged(1, 2);
+
+        assertThat(ranged).containsExactly(block3, block2);
     }
 }
