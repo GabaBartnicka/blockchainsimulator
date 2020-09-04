@@ -90,10 +90,10 @@ dependencies {
     testCompile group: 'org.assertj', name: 'assertj-core', version: '3.16.1'
 }
 
-test {
-    useJUnitPlatform()
-    testLogging {
-        exceptionFormat = 'full'
-        showStandardStreams = true
-    }
-}
+//test {
+//    useJUnitPlatform()
+//    testLogging {
+//        exceptionFormat = 'full'
+//        showStandardStreams = true
+//    }
+//}

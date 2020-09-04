@@ -174,4 +174,12 @@ public class Transaction implements JsonableExposedOnly, Comparable<Transaction>
             this.deltaAmount = deltaAmount;
         }
     }
+
+    public Optional<BigDecimal> getOutputAmountForAddress(@NotNull PublicAddress publicAddress) {
+        return outputs.stream().filter(o->o.getAddress().equals(publicAddress)).map(Output::getDeltaAmount).findAny();
+    }
+
+    public boolean isReward() {
+        return false;
+    }
 }

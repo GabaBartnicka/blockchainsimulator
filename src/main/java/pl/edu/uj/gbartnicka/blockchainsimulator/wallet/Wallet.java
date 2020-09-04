@@ -17,6 +17,7 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
 import java.security.Signature;
+import java.util.List;
 
 import static pl.edu.uj.gbartnicka.blockchainsimulator.configuration.DefaultValues.INITIAL_BALANCE;
 import static pl.edu.uj.gbartnicka.blockchainsimulator.wallet.keys.Keys.generateKeys;
@@ -26,12 +27,10 @@ import static pl.edu.uj.gbartnicka.blockchainsimulator.wallet.keys.Keys.generate
 @JsonIgnoreProperties({"keyPair"})
 public class Wallet implements JsonableExposedOnly, Serializable, DisposableBean {
     private static final long serialVersionUID = 1436085228654294618L;
-
-    private transient KeyPair keyPair;
-    private final byte[] encodedPriv;
-
     @Expose
     protected final PublicAddress publicAddress;
+    private final byte[] encodedPriv;
+    private transient KeyPair keyPair;
     @Expose
     private BigDecimal balance;
 
@@ -55,9 +54,9 @@ public class Wallet implements JsonableExposedOnly, Serializable, DisposableBean
             ecdsaSign.update(hashData.getBytes(StandardCharsets.UTF_8));
             return ecdsaSign.sign();
         })
-                .onSuccess(b -> log.debug("Data has signed"))
-                .onFailure(e -> log.error("Cannot sign data! {}", e.getMessage()))
-                .getOrElseThrow(e -> new CannotSignDataException(e.getMessage(), e));
+                  .onSuccess(b -> log.debug("Data has signed"))
+                  .onFailure(e -> log.error("Cannot sign data! {}", e.getMessage()))
+                  .getOrElseThrow(e -> new CannotSignDataException(e.getMessage(), e));
     }
 
     @NotNull
@@ -87,5 +86,23 @@ public class Wallet implements JsonableExposedOnly, Serializable, DisposableBean
             throw new IllegalArgumentException("Invalid key pair!");
         }
         this.keyPair = keyPair;
+    }
+
+    public void updateBalance(@NotNull List<Transaction> minedTransactions) {
+        minedTransactions.stream()
+                         .filter(t -> t.input.senderAddress.equals(publicAddress))
+                         .max(Transaction::compareTo)
+                         .ifPresentOrElse(t -> t.getOutputAmountForAddress(publicAddress)
+                                                .ifPresentOrElse(amount -> this.balance = amount,
+                                                        () -> log.warn("No balance to update")),
+                                 () -> log.warn("No transaction found for current wallet"));
+
+        minedTransactions.stream()
+                         .filter(Transaction::isReward)
+                         .findAny()
+                         .ifPresentOrElse(rt-> rt.getOutputAmountForAddress(publicAddress)
+                                                 .ifPresentOrElse(amount -> this.balance = this.balance.add(amount),
+                                 () -> log.warn("No reward balance to update")),
+                                 () -> log.warn("No reward transaction found for current wallet"));
     }
 }

@@ -91,7 +91,9 @@ public class BlockchainService implements Pageable<Block> {
 
             free.set(true);
             publisher.publishEvent(new NewBlockMinedEvent(new BlockEnvelope(newBlock, myself), this));
+            wallet.updateBalance(validTransactions);
             transactionPool.clear(validTransactions);
+
         });
 
         return true;
@@ -133,7 +135,7 @@ public class BlockchainService implements Pageable<Block> {
     @NotNull
     public BlockchainWithoutChain blockchainInfo() {
         log.info("current blockchain size = {}", blockchain.getSize());
-        return BlockchainWithoutChain.fromBlockchain(blockchain);
+        return BlockchainWithoutChain.fromBlockchain(blockchain, wallet.getBalance());
     }
 
     @NotNull

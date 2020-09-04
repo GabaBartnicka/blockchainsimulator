@@ -5,6 +5,7 @@ import pl.edu.uj.gbartnicka.blockchainsimulator.wallet.keys.Keys;
 
 import java.math.BigDecimal;
 import java.util.Collections;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,6 +37,10 @@ class TransactionPoolTest {
         assertThat(transactionPool.getTransactions()).first().isEqualTo(transaction1);
         assertThat(transactionPool.getTransactions()).last().isEqualTo(transaction2);
         assertThat(transactionPool.validTransactions()).isEqualTo(transactionPool.getTransactions());
+
+        final var transactions = transactionPool.validTransactions();
+
+        assertThat(transactions.stream().max(Transaction::compareTo).get()).isEqualTo(transaction2);
     }
 
     @Test

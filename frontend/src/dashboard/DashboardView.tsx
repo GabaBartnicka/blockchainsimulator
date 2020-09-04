@@ -35,7 +35,7 @@ export const DashboardView = () => {
                         {blockchainInfo ? (
                             <>
                                 <Typography variant={'h6'}>Balance</Typography>
-                                <Typography variant={'h4'}>{blockchainInfo.wallet?.balance?.toFixed(2)}</Typography>
+                                <Typography variant={'h4'}>{blockchainInfo.currentWalletAmount?.toFixed(2)}</Typography>
                             </>
                         ) : (
                             <CircularProgress/>

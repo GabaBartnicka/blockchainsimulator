@@ -17,4 +17,9 @@ public class RewardTransaction extends Transaction {
     public boolean isValid() {
         return verify();
     }
+
+    @Override
+    public boolean isReward() {
+        return true;
+    }
 }
