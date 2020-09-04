@@ -71,11 +71,9 @@ public class PeersHandler {
             log.warn("No name found!");
             return ServerResponse.notFound().build();
         }
-        var pinged = peerConnector.ping(name);
-        return pinged ? ServerResponse.ok().build() :
-                ServerResponse.ok()
-                              .contentType(MediaType.APPLICATION_JSON)
-                              .body(BodyInserters.fromValue("Peer " + name + " is unavailable"));
-
+        var peerAvailable = peerConnector.ping(name);
+        return ServerResponse.ok()
+                             .contentType(MediaType.APPLICATION_JSON)
+                             .body(BodyInserters.fromValue(peerAvailable));
     }
 }
