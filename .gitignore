@@ -236,3 +236,9 @@ frontend/.env.production.local
 frontend/npm-debug.log*
 frontend/yarn-debug.log*
 frontend/yarn-error.log*
+
+src/main/resources/public/*
+src/main/generated/
+src/main/resources/db/0.0.0.0_8083/
+src/main/resources/db/localhost_808080/
+src/main/resources/templates/

@@ -33,14 +33,14 @@ public class AppRouter {
                 .andRoute(GET("/v0/blocks").and(accept(MediaType.APPLICATION_JSON)), appHandler::blocks)
                 .andRoute(GET("/v0/block/{index}").and(accept(MediaType.APPLICATION_JSON)), appHandler::blockByIndex)
                 .andRoute(POST("/v0/transaction").and(accept(MediaType.APPLICATION_JSON)), transactionsHandler::performTransaction)
+                .andRoute(GET("/v0/transactions").and(accept(MediaType.APPLICATION_JSON)), transactionsHandler::transactionPool)
                 .andRoute(POST("/v0/mine").and(accept(MediaType.APPLICATION_JSON)), appHandler::mine)
                 .andRoute(GET("/v0/mine/status").and(accept(MediaType.APPLICATION_JSON)), appHandler::mineStatus)
-                .andRoute(GET("/v0/transactions").and(accept(MediaType.APPLICATION_JSON)), transactionsHandler::transactionPool)
                 .andRoute(GET("/v0/peers").and(accept(MediaType.APPLICATION_JSON)), peersHandler::all)
                 .andRoute(GET("/v0/peer/{name}").and(accept(MediaType.APPLICATION_JSON)), peersHandler::byName)
                 .andRoute(DELETE("/v0/peer/{name}").and(accept(MediaType.APPLICATION_JSON)), peersHandler::deletePeer)
                 .andRoute(PUT("/v0/peer/new").and(accept(MediaType.APPLICATION_JSON)), peersHandler::addNewPeer)
-                .andRoute(PUT("/v0/peer/ping").and(accept(MediaType.APPLICATION_JSON)), peersHandler::ping)
+                .andRoute(POST("/v0/peer/ping").and(accept(MediaType.APPLICATION_JSON)), peersHandler::ping)
                 .andRoute(GET("/v0/blockchain").and(accept(MediaType.APPLICATION_JSON)), appHandler::blockchain);
         // @formatter:on
     }
