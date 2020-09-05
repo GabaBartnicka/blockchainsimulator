@@ -1,15 +1,5 @@
 # blockchainsimulator 
 
-REST API 
+```docker pull gabrielab/blockchain-simulator```
 
-blocks
-```http://localhost:8080/blocks?page=0&size=2```
-
-block by index
-```http://localhost:8080/block/{index}```
-
-blockchain info
-```http://localhost:8080/blockchain```
-
-wallet info
-```http://localhost:8080/wallet```
+```docker run -p 8080:8080 -p 8083:8083 gabrielab/blockchain-simulator:latest```
