@@ -2,9 +2,9 @@ version: '3'
 
 services:
   blockchainsimulator:
-    image: gaba-blockchain:latest
-    environment:
-      - SPRING_PROFILES_ACTIVE=dev
+    image: gabrielab/blockchain-simulator:latest
+#    environment:
+#      - SPRING_PROFILES_ACTIVE=dev
     ports:
       - 8083:8083
       - 8080:8080

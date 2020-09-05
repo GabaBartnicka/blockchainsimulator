@@ -1,7 +1,7 @@
 plugins {
     id 'org.springframework.boot' version '2.3.1.RELEASE'
     id 'io.spring.dependency-management' version '1.0.9.RELEASE'
-    id 'com.google.cloud.tools.jib' version '2.4.0'
+    id 'com.google.cloud.tools.jib' version '2.5.0'
     id 'java'
     id "com.github.node-gradle.node" version "2.2.4"
 }
@@ -57,7 +57,7 @@ jib {
         image 'amd64/openjdk:14'
     }
     to {
-        image = "gaba-blockchain:0.0.1-SNAPSHOT"
+        image = "gabrielab/blockchain-simulator:0.0.1-SNAPSHOT"
         tags = ['latest']
     }
 }

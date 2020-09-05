@@ -12,6 +12,7 @@
       </ENTRIES>
     </extension>
     <option name="SPRING_BOOT_MAIN_CLASS" value="pl.edu.uj.gbartnicka.blockchainsimulator.BlockchainSimulatorApplication" />
+    <option name="ACTIVE_PROFILES" value="dev" />
     <option name="PROGRAM_PARAMETERS" value="--spring.rsocket.server.port=7001 --server.port=8080" />
     <option name="ALTERNATIVE_JRE_PATH" />
     <method v="2">
